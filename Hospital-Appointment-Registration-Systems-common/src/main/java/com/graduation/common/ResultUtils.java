@@ -8,7 +8,7 @@ public class ResultUtils {
      * 成功
      * @param data  数据
      * @param <T>  数据类型
-     * @return BaseResponse
+     * @return BaseResponse.
      */
     public static <T> BaseResponse<T> success(T data) {
         return new BaseResponse<>(200, data, "ok");
