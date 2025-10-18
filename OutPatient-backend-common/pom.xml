@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.graduation</groupId>
-        <artifactId>Hospital-Appointment-Registration-Systems2</artifactId>
+        <artifactId>OutPatient-backend</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>Hospital-Appointment-Registration-Systems-common</artifactId>
+    <artifactId>OutPatient-backend-common</artifactId>
 
     <properties>
         <maven.compiler.source>25</maven.compiler.source>
@@ -17,4 +17,18 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+    </dependencies>
 </project>

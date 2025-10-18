@@ -1,11 +1,14 @@
 package com.graduation.common;
 
+import lombok.Data;
+
 import java.io.Serializable;
 
 
 /**
  * 统一响应结果
  */
+@Data
 public class BaseResponse<T> implements Serializable {
     // 序列化版本号
     private static final long serialVersionUID = 1L;
