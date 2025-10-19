@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @TableName("department")
 public class Department implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

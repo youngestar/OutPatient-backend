@@ -1,9 +1,9 @@
 package com.graduation.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.graduation.entity.Schedule;
+import com.graduation.entity.Department;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
-public interface ScheduleMapper extends BaseMapper<Schedule> {
+public interface DepartmentMapper extends BaseMapper<Department> {
 }

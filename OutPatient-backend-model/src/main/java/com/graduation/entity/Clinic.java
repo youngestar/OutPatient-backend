@@ -9,7 +9,6 @@ import lombok.experimental.Accessors;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -17,52 +16,32 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("schedule")
-public class Schedule implements Serializable {
+@TableName("clinic")
+public class Clinic implements Serializable {
     //序列化版本号
     @Serial
     private static final long serialVersionUID = 1L;
 
     /**
-     * 排班ID
-     */
-    @TableId(value = "schedule_id", type = IdType.ASSIGN_ID)
-    private Long scheduleId;
-
-    /**
-     * 医生ID
-     */
-    private Long doctorId;
-
-    /**
      * 门诊ID
      */
+    @TableId(value = "clinic_id", type = IdType.ASSIGN_ID)
     private Long clinicId;
 
     /**
-     * 排班日期
+     * 所属科室ID
      */
-    private LocalDate scheduleDate;
+    private Long deptId;
 
     /**
-     * 时间段(如 08:00-12:00)
+     * 门诊名称
      */
-    private String timeSlot;
+    private String clinicName;
 
     /**
-     * 该时段可挂号最大人数
+     * 是否有效(0-无效,1-有效)
      */
-    private Integer maxPatients;
-
-    /**
-     * 当前已预约人数
-     */
-    private Integer currentPatients;
-
-    /**
-     * 排班状态(0-无效,1-有效)
-     */
-    private Integer status;
+    private Integer isActive;
 
     /**
      * 创建时间
@@ -75,5 +54,4 @@ public class Schedule implements Serializable {
      */
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
-
 }

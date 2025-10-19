@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RequestMapping("/schedule")
@@ -28,7 +27,7 @@ public class ScheduleController {
      * @return 添加结果
      */
     @PostMapping("/add")
-    public BaseResponse<Schedule> addSchedule(@RequestBody ScheduleRequest scheduleRequest) {
+    public BaseResponse<Long> addSchedule(@RequestBody ScheduleRequest scheduleRequest) {
         log.info("添加排班请求: {}", scheduleRequest);
         // 移除重复的 checkSchedule 调用，已经在 service 层处理
         return scheduleService.addSchedule(scheduleRequest);
@@ -41,7 +40,7 @@ public class ScheduleController {
      * @return 更新结果
      */
     @PostMapping("/update")
-    public BaseResponse<Schedule> updateSchedule(@RequestBody ScheduleRequest scheduleRequest) {
+    public BaseResponse<Boolean> updateSchedule(@RequestBody ScheduleRequest scheduleRequest) {
         log.info("更新排班请求: {}", scheduleRequest);
         return scheduleService.updateSchedule(scheduleRequest);
     }

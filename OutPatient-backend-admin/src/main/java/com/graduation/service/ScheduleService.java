@@ -9,9 +9,9 @@ import java.util.List;
 public interface ScheduleService {
     void checkSchedule(ScheduleRequest scheduleRequest);
 
-    BaseResponse<Schedule> addSchedule(ScheduleRequest scheduleRequest);
+    BaseResponse<Long> addSchedule(ScheduleRequest scheduleRequest);
 
-    BaseResponse<Schedule> updateSchedule(ScheduleRequest scheduleRequest);
+    BaseResponse<Boolean> updateSchedule(ScheduleRequest scheduleRequest);
 
     BaseResponse<String> logicDeleteSchedule(ScheduleRequest scheduleRequest);
 

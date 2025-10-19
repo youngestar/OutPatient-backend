@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 @TableName("user")
 public class User implements Serializable {
     //序列化版本号
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

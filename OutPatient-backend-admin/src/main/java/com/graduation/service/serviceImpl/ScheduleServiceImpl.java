@@ -12,7 +12,6 @@ import com.graduation.mapper.ScheduleMapper;
 import com.graduation.service.ScheduleService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -49,7 +48,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public BaseResponse<Schedule> addSchedule(ScheduleRequest scheduleRequest) {
+    public BaseResponse<Long> addSchedule(ScheduleRequest scheduleRequest) {
         // 参数校验
         checkSchedule(scheduleRequest);
 
@@ -76,11 +75,12 @@ public class ScheduleServiceImpl implements ScheduleService {
                 , ErrorCode.OPERATION_ERROR, "添加排班失败");
 
         log.info("排班添加成功，排班ID: {}", schedule.getScheduleId());
-        return ResultUtils.success(schedule);
+
+        return ResultUtils.success(schedule.getScheduleId());
     }
 
     @Override
-    public BaseResponse<Schedule> updateSchedule(ScheduleRequest scheduleRequest) {
+    public BaseResponse<Boolean> updateSchedule(ScheduleRequest scheduleRequest) {
         // 参数校验
         checkSchedule(scheduleRequest);
         //检查排班是否存在
@@ -107,7 +107,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         log.info("排班更新成功，排班ID: {}", schedule.getScheduleId());
 
-        return ResultUtils.success(schedule);
+        return ResultUtils.success(true);
     }
 
     @Override

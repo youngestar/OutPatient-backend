@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.*;
 import lombok.*;
 import lombok.experimental.Accessors;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 public class Doctor implements Serializable {
     //序列化版本号
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
