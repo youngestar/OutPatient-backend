@@ -1,19 +1,26 @@
 package com.graduation.service.serviceImpl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.graduation.DTO.DoctorRequest;
 import com.graduation.VO.DoctorVO;
 import com.graduation.common.BaseResponse;
 import com.graduation.common.ErrorCode;
 import com.graduation.entity.Doctor;
 import com.graduation.exception.ThrowUtils;
+import com.graduation.mapper.DoctorMapper;
 import com.graduation.service.DoctorService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Slf4j
 @Service
-public class DoctorServiceImpl implements DoctorService {
+public class DoctorServiceImpl extends ServiceImpl<DoctorMapper, Doctor> implements DoctorService {
+
+    //TODO: 添加
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BaseResponse<Doctor> addDoctor(DoctorRequest doctorRequest) {
@@ -50,6 +57,7 @@ public class DoctorServiceImpl implements DoctorService {
         checkDoctor(doctorRequest);
     }
 
+    // TODO: 删除
     @Override
     public BaseResponse<Doctor> deleteDoctor(Long doctorId) {
 
@@ -57,9 +65,48 @@ public class DoctorServiceImpl implements DoctorService {
                 , ErrorCode.PARAMS_ERROR, "医生ID不能为空");
     }
 
+    // TODO: 查询
     @Override
     public BaseResponse<DoctorVO> getDoctor(Long doctorId) {
 
 
     }
+
+
+    @Override
+    public Doctor getDoctorByUserId(Long userId) {
+        if (userId == null) {
+            return null;
+        }
+
+        LambdaQueryWrapper<Doctor> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Doctor::getUserId, userId);
+        return getOne(queryWrapper);
+    }
+
+    @Override
+    public List<Doctor> getDoctorsByClinicId(Long clinicId) {
+        if (clinicId == null) {
+            return null;
+        }
+
+        LambdaQueryWrapper<Doctor> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Doctor::getClinicId, clinicId);
+        queryWrapper.orderByAsc(Doctor::getName);
+        return list(queryWrapper);
+    }
+
+    @Override
+    public List<Doctor> getDoctorsByName(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            return null;
+        }
+
+        LambdaQueryWrapper<Doctor> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(Doctor::getName, name);
+        queryWrapper.orderByAsc(Doctor::getClinicId)
+                .orderByAsc(Doctor::getName);
+        return list(queryWrapper);
+    }
+
 }

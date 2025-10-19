@@ -1,7 +1,7 @@
 server:
-  port: 8201
+  port: 8202
   servlet:
-    context-path: /api/admin
+    context-path: /api/auth
     # cookie 30天过期
     session:
       cookie:
@@ -10,7 +10,7 @@ server:
 
 spring:
   application:
-    name: Outpatient-backend-admin
+    name: Outpatient-backend-auth
   # 默认 dev 环境
   profiles:
     active: dev
@@ -32,6 +32,27 @@ spring:
       max-lifetime: 1800000 # 连接的最大生命周期，单位毫秒，这里是30分钟
       idle-timeout: 600000 #连接空闲的最大时间，单位毫秒，这里是10分钟
       minimum-idle: 5       # 最小空闲连接数
+
+  mail:
+    # 邮箱服务器
+    host: smtp.qq.com
+    # 编码集
+    default-encoding: UTF-8
+    # 邮箱账号
+    username|: 1286958193@qq.com
+    # 邮箱密码
+    password: xvdzhnhhwvurhfbf
+    # 邮箱端口
+    port: 465
+    # 协议: smtp
+    protocol: smtp
+    # 昵称
+    nickname: 医院门诊系统
+    # 属性
+    properties:
+      "mail.smtp.auth": true                # 必须开启，验证身份
+      "mail.smtp.starttls.enable": true     # 建议开启，确保传输安全
+      "mail.smtp.timeout": 5000             # 建议设置，避免发送超时
 
   data:
     redis:

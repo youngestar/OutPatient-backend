@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.graduation.mapper.DoctorMapper">
+    <resultMap id="BaseResultMap" type="com.graduation.entity.Doctor">
+        <id column="doctor_id" jdbcType="BIGINT" property="doctorId"/>
+        <result column="user_id" jdbcType="BIGINT" property="userId"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="clinic_id" jdbcType="BIGINT" property="clinicId"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="introduction" jdbcType="VARCHAR" property="introduction"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        doctor_id, user_id, name, clinic_id, title, introduction, create_time, update_time
+    </sql>
+</mapper>
