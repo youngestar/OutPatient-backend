@@ -7,10 +7,10 @@ import com.graduation.entity.Schedule;
 import com.graduation.service.ScheduleService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RequestMapping("/schedule")
@@ -33,4 +33,55 @@ public class ScheduleController {
         // 移除重复的 checkSchedule 调用，已经在 service 层处理
         return scheduleService.addSchedule(scheduleRequest);
     }
+
+    /**
+     * 更新排班
+     *
+     * @param scheduleRequest 排班信息
+     * @return 更新结果
+     */
+    @PostMapping("/update")
+    public BaseResponse<Schedule> updateSchedule(@RequestBody ScheduleRequest scheduleRequest) {
+        log.info("更新排班请求: {}", scheduleRequest);
+        return scheduleService.updateSchedule(scheduleRequest);
+    }
+
+    /**
+     * 删除排班
+     *
+     * @param scheduleRequest 排班信息
+     * @return 删除结果
+     */
+    @PostMapping("/delete")
+    public BaseResponse<String> logicDeleteSchedule(@RequestBody ScheduleRequest scheduleRequest) {
+        log.info("删除排班请求: {}", scheduleRequest);
+        return scheduleService.logicDeleteSchedule(scheduleRequest);
+    }
+
+    /**
+     * 获取排班列表
+     *
+     * @param scheduleRequest 排班信息
+     * @return 排班列表
+     */
+    @PostMapping("/list")
+    public BaseResponse<List<Schedule>> getScheduleList(@RequestBody ScheduleRequest scheduleRequest) {
+        log.info("获取排班列表请求: {}", scheduleRequest);
+        return scheduleService.getScheduleList(scheduleRequest);
+    }
+
+    /**
+     * 获取排班详情
+     *
+     * @param scheduleId 排班ID
+     * @return 排班详情
+     */
+    @GetMapping("/detail-get")
+    public BaseResponse<Schedule> getScheduleDetail(@RequestParam("scheduleId") Long scheduleId) {
+        log.info("获取排班详情请求: {}", scheduleId);
+        return scheduleService.getScheduleDetail(scheduleId);
+    }
+
+    // TODO:执行自动排班
+
 }
