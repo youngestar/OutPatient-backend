@@ -23,9 +23,30 @@ spring:
     # 30 天过期
     timeout: 2592000
 
+  mail:
+    host: smtp.qq.com
+    default-encoding: UTF-8
+    username: 1286958193@qq.com
+    password: xvdzhnhhwvurhfbf  # 确保这是QQ邮箱的授权码而不是登录密码
+    port: 465
+    protocol: smtps  # 改为smtps协议
+    test-connection: false  # 禁用启动时测试连接
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true
+          socketFactory:
+            class: javax.net.ssl.SSLSocketFactory
+            fallback: false
+          connectiontimeout: 10000
+          timeout: 10000
+          writetimeout: 10000
+
   # 数据库相关配置
   datasource:
-    url: jdbc:mysql://localhost:3306
+    url: jdbc:mysql://localhost:3306/hospital_management_system
     username: root
     password: 258013
     hikari:
@@ -56,4 +77,12 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
+
+# MinIO 配置
+minio:
+  endpoint: http://localhost:9000  # MinIO 服务器地址
+  access-key: minioadmin           # 访问密钥
+  secret-key: minioadmin           # 秘密密钥
+  bucket-name: user-avatar         # 存储桶名称
+
 

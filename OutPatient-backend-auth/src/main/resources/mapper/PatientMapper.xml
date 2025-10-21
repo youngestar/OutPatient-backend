@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.graduation.mapper.PatientMapper">
-    <resultMap id="BaseResultMap" type="com.graduation.entity.Patient">
+<mapper namespace="com.graduation.service.mapper.PatientMapper">
+    <resultMap id="BaseResultMap" type="com.graduation.model.entity.Patient">
         <id column="patient_id" jdbcType="BIGINT" property="patientId"/>
         <result column="user_id" jdbcType="BIGINT" property="userId"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
