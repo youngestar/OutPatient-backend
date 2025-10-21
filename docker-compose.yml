@@ -1,0 +1,131 @@
+version: '3.8'
+
+services:
+  # MySQL 数据库
+  mysql:
+    image: mysql:8.0
+    container_name: outpatient-backend
+    environment:
+      MYSQL_ROOT_PASSWORD: 258013
+      MYSQL_DATABASE: hospital_management_system
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - hospital-network
+
+  # Redis 缓存
+  redis:
+    image: redis:7-alpine
+    container_name: hospital-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass 258013
+    volumes:
+      - redis_data:/data
+    networks:
+      - hospital-network
+
+  # Nacos 服务发现
+  nacos:
+    image: nacos/nacos-server:v2.2.3
+    container_name: hospital-nacos
+    environment:
+      - MODE=standalone
+    ports:
+      - "8848:8848"
+    networks:
+      - hospital-network
+
+  # MinIO 对象存储
+  minio:
+    image: minio/minio:latest
+    container_name: hospital-minio
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - hospital-network
+
+  # 网关服务
+  gateway:
+    build:
+      context: .
+      dockerfile: OutPatient-backend-gateway/Dockerfile
+    container_name: hospital-gateway
+    ports:
+      - "8200:8200"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_NACOS_DISCOVERY_SERVER-ADDR=nacos:8848
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PASSWORD=258013
+    depends_on:
+      - nacos
+      - redis
+    networks:
+      - hospital-network
+
+  # 认证服务
+  auth:
+    build:
+      context: .
+      dockerfile: OutPatient-backend-auth/Dockerfile
+    container_name: hospital-auth
+    ports:
+      - "8203:8203"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/hospital_management_system?useSSL=false&serverTimezone=Asia/Shanghai
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=258013
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PASSWORD=258013
+      - SPRING_CLOUD_NACOS_DISCOVERY_SERVER-ADDR=nacos:8848
+      - MINIO_ENDPOINT=http://minio:9000
+    depends_on:
+      - mysql
+      - redis
+      - nacos
+    networks:
+      - hospital-network
+
+  # 管理后台服务
+  admin:
+    build:
+      context: .
+      dockerfile: OutPatient-backend-admin/Dockerfile
+    container_name: hospital-admin
+    ports:
+      - "8201:8201"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/hospital_management_system?useSSL=false&serverTimezone=Asia/Shanghai
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=258013
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PASSWORD=258013
+      - SPRING_CLOUD_NACOS_DISCOVERY_SERVER-ADDR=nacos:8848
+      - MINIO_ENDPOINT=http://minio:9000
+    depends_on:
+      - mysql
+      - redis
+      - nacos
+    networks:
+      - hospital-network
+
+volumes:
+  mysql_data:
+  redis_data:
+  minio_data:
+
+networks:
+  hospital-network:
+    driver: bridge

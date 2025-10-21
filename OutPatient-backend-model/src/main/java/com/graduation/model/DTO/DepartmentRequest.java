@@ -2,8 +2,6 @@ package com.graduation.model.DTO;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
