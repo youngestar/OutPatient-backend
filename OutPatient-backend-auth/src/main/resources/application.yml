@@ -74,12 +74,23 @@ minio:
 
 # Sa-Token配置（Gateway专用）
 sa-token:
+  # taken 名称
   token-name: satoken
+  # token 风格
+  token-style: uuid
+  # token 有效期
   timeout: 2592000
+  # token 最低活跃频率
   active-timeout: -1
+  # token 持久化
+  is-save-session: true
+  # 是否允许同一账号多地同时登录
   is-concurrent: true
+  # 在多人登录同一账号时，是否共用一个 token
   is-share: true
-  is-log: false
+  # 是否输出 Sa-Token 日志
+  is-log: true
+  # Jwt 签名密钥
   jwt-secret-key: graduation-gateway-secret-key-2025
   # Redis配置（如果使用Redis存储token）
   token-prefix: "satoken:"

@@ -90,7 +90,11 @@ spring:
 
 # Sa-Token配置（Gateway专用）
 sa-token:
+  # Token配置
   token-name: satoken
+  # Token风格
+  token-style: uuid
+  # Token有效期
   timeout: 2592000
   active-timeout: -1
   is-concurrent: true

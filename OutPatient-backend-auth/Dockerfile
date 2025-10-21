@@ -26,13 +26,19 @@ RUN mvn clean install -DskipTests && \
     mvn clean package -pl OutPatient-backend-auth -DskipTests
 
 # 运行时镜像
-FROM eclipse-temurin:17-jre-jammy
+FROM eclipse-temurin:17-jre
 
 # 设置时区
 RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
 # 创建应用目录和用户
 RUN groupadd -r appuser && useradd -r -g appuser appuser
+
+# 创建 Sentinel 日志目录并设置权限
+RUN mkdir -p /home/appuser/logs/csp && \
+    chown -R appuser:appuser /home/appuser && \
+    chmod -R 755 /home/appuser
+
 USER appuser
 
 WORKDIR /app
