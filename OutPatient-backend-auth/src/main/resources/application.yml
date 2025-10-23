@@ -92,6 +92,8 @@ sa-token:
   is-log: true
   # Jwt 签名密钥
   jwt-secret-key: graduation-gateway-secret-key-2025
+  auto-renew: true
+
   # Redis配置（如果使用Redis存储token）
   token-prefix: "satoken:"
   is-read-body: false

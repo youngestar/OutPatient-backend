@@ -63,6 +63,12 @@ spring:
           filters:
             - StripPrefix=1
 
+        # WebSocket路由
+        - id: websocket-route
+          uri: lb:ws://outpatient-backend-auth
+          predicates:
+            - Path=/websocket/**
+
       # 全局过滤器 - 修正配置
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Origin
@@ -101,6 +107,7 @@ sa-token:
   is-share: true
   is-log: false
   jwt-secret-key: graduation-gateway-secret-key-2025
+  auto-renew: true
 
 # 日志配置
 logging:
