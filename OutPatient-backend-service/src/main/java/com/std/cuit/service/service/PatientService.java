@@ -19,4 +19,6 @@ public interface PatientService extends IService<Patient> {
      * @return 患者对象
      */
     Patient getByUserId(Long userId);
+
+    Long getPatientIdByUserId(Long id);
 }

@@ -7,6 +7,7 @@ import com.std.cuit.model.entity.Schedule;
 import com.std.cuit.service.service.ScheduleService;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,7 @@ public class ScheduleController {
      */
     @PostMapping("/add")
     @Operation(summary = "添加排班", description = "添加排班")
-    public BaseResponse<Long> addSchedule(@RequestBody ScheduleRequest scheduleRequest) {
+    public BaseResponse<Long> addSchedule(@Parameter(description = "排班信息") @RequestBody ScheduleRequest scheduleRequest) {
         log.info("添加排班请求: {}", scheduleRequest);
         // 移除重复的 checkSchedule 调用，已经在 service 层处理
         return scheduleService.addSchedule(scheduleRequest);
@@ -45,7 +46,7 @@ public class ScheduleController {
      */
     @PostMapping("/update")
     @Operation(summary = "更新排班", description = "更新排班")
-    public BaseResponse<Boolean> updateSchedule(@RequestBody ScheduleRequest scheduleRequest) {
+    public BaseResponse<Boolean> updateSchedule(@Parameter(description = "排班信息") @RequestBody ScheduleRequest scheduleRequest) {
         log.info("更新排班请求: {}", scheduleRequest);
         return scheduleService.updateSchedule(scheduleRequest);
     }
@@ -58,7 +59,7 @@ public class ScheduleController {
      */
     @PostMapping("/delete")
     @Operation(summary = "删除排班", description = "删除排班")
-    public BaseResponse<String> logicDeleteSchedule(@RequestBody ScheduleRequest scheduleRequest) {
+    public BaseResponse<String> logicDeleteSchedule(@Parameter(description = "排班信息") @RequestBody ScheduleRequest scheduleRequest) {
         log.info("删除排班请求: {}", scheduleRequest);
         return scheduleService.logicDeleteSchedule(scheduleRequest);
     }
@@ -71,7 +72,7 @@ public class ScheduleController {
      */
     @PostMapping("/list")
     @Operation(summary = "获取排班列表", description = "获取排班列表")
-    public BaseResponse<List<Schedule>> getScheduleList(@RequestBody ScheduleRequest scheduleRequest) {
+    public BaseResponse<List<Schedule>> getScheduleList(@Parameter(description = "排班信息") @RequestBody ScheduleRequest scheduleRequest) {
         log.info("获取排班列表请求: {}", scheduleRequest);
         return scheduleService.getScheduleList(scheduleRequest);
     }
@@ -84,7 +85,7 @@ public class ScheduleController {
      */
     @GetMapping("/detail-get")
     @Operation(summary = "获取排班详情", description = "获取排班详情")
-    public BaseResponse<Schedule> getScheduleDetail(@RequestParam("scheduleId") Long scheduleId) {
+    public BaseResponse<Schedule> getScheduleDetail(@Parameter(description = "排班ID") @RequestParam("scheduleId") Long scheduleId) {
         log.info("获取排班详情请求: {}", scheduleId);
         return scheduleService.getScheduleDetail(scheduleId);
     }

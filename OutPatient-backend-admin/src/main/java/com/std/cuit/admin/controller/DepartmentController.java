@@ -7,6 +7,7 @@ import com.std.cuit.model.entity.Department;
 import com.std.cuit.service.service.DepartmentService;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +29,7 @@ public class DepartmentController {
      */
     @PostMapping("/add")
     @Operation(summary = "添加科室", description = "添加科室")
-    public BaseResponse<Long> addDepartment(@RequestBody DepartmentRequest departmentRequest) {
+    public BaseResponse<Long> addDepartment(@Parameter(description = "科室信息") @RequestBody DepartmentRequest departmentRequest) {
         return departmentService.addDepartment(departmentRequest);
     }
 
@@ -39,7 +40,7 @@ public class DepartmentController {
      */
     @PostMapping("/update")
     @Operation(summary = "修改科室信息", description = "修改科室信息")
-    public BaseResponse<Boolean> updateDepartment(@RequestBody DepartmentRequest departmentRequest) {
+    public BaseResponse<Boolean> updateDepartment(@Parameter(description = "科室信息") @RequestBody DepartmentRequest departmentRequest) {
         return departmentService.updateDepartment(departmentRequest);
     }
 
@@ -50,7 +51,7 @@ public class DepartmentController {
      */
     @PostMapping("/delete")
     @Operation(summary = "逻辑删除科室", description = "逻辑删除科室")
-    public BaseResponse<Boolean> deleteDepartmentLogic(@RequestBody DepartmentRequest departmentRequest) {
+    public BaseResponse<Boolean> deleteDepartmentLogic(@Parameter(description = "科室信息") @RequestBody DepartmentRequest departmentRequest) {
         return departmentService.deleteDepartmentLogic(departmentRequest);
     }
 
@@ -61,7 +62,7 @@ public class DepartmentController {
      */
     @PostMapping("/recover")
     @Operation(summary = "恢复科室", description = "恢复科室")
-    public BaseResponse<Boolean> recoverDepartment(@RequestBody DepartmentRequest departmentRequest) {
+    public BaseResponse<Boolean> recoverDepartment(@Parameter(description = "科室信息") @RequestBody DepartmentRequest departmentRequest) {
         return departmentService.recoverDepartment(departmentRequest);
     }
 
@@ -72,7 +73,7 @@ public class DepartmentController {
      */
     @PostMapping("/delete-physically")
     @Operation(summary = "物理删除科室", description = "物理删除科室")
-    public BaseResponse<Boolean> deleteDepartmentPhysically(@RequestBody DepartmentRequest departmentRequest) {
+    public BaseResponse<Boolean> deleteDepartmentPhysically(@Parameter(description = "科室信息") @RequestBody DepartmentRequest departmentRequest) {
         return departmentService.deleteDepartmentPhysically(departmentRequest);
     }
 
@@ -83,7 +84,7 @@ public class DepartmentController {
      */
     @GetMapping("/detail-get")
     @Operation(summary = "获取科室详情", description = "获取科室详情")
-    public BaseResponse<Department> getDepartmentDetail(@RequestParam("departmentId") Long departmentId) {
+    public BaseResponse<Department> getDepartmentDetail(@Parameter(description = "科室ID") @RequestParam("departmentId") Long departmentId) {
         return departmentService.getDepartmentDetail(departmentId);
     }
 

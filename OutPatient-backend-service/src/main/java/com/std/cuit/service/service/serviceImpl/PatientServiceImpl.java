@@ -24,4 +24,13 @@ public class PatientServiceImpl extends ServiceImpl<PatientMapper, Patient> impl
                 .eq(Patient::getUserId, userId)
                 .last("LIMIT 1"));
     }
+
+    @Override
+    public Long getPatientIdByUserId(Long id) {
+        return getOne(new LambdaQueryWrapper<Patient>()
+                .eq(Patient::getUserId, id)
+                .select(Patient::getPatientId)
+                .last("LIMIT 1"))
+                .getPatientId();
+    }
 }

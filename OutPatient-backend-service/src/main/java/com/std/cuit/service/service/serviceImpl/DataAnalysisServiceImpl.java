@@ -1,6 +1,8 @@
 package com.std.cuit.service.service.serviceImpl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.std.cuit.common.common.ErrorCode;
+import com.std.cuit.common.exception.ThrowUtils;
 import com.std.cuit.model.entity.*;
 import com.std.cuit.service.service.*;
 import jakarta.annotation.Resource;
@@ -108,7 +110,9 @@ public class DataAnalysisServiceImpl implements DataAnalysisService {
         // 进行分组统计
         result = diagnosisList.stream()
                 .collect(Collectors.groupingBy(groupingFunction, Collectors.summingInt(diag -> 1)));
-        
+
+        ThrowUtils.throwIf(result.isEmpty()
+                , ErrorCode.PARAMS_ERROR, "没有找到任何数据");
         // 填充空缺的时间点
         result = fillMissingTimePoints(result, startDate, endDate, timeUnit);
         
@@ -179,7 +183,10 @@ public class DataAnalysisServiceImpl implements DataAnalysisService {
         // 进行分组统计
         result = consultRecords.stream()
                 .collect(Collectors.groupingBy(groupingFunction, Collectors.summingInt(record -> 1)));
-        
+
+        ThrowUtils.throwIf(result.isEmpty()
+                , ErrorCode.PARAMS_ERROR, "没有找到任何数据");
+
         // 填充空缺的时间点
         result = fillMissingTimePoints(result, startDate, endDate, timeUnit);
         

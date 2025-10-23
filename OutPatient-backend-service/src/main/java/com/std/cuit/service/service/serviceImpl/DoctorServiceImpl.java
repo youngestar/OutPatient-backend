@@ -383,5 +383,4 @@ public class DoctorServiceImpl extends ServiceImpl<DoctorMapper, Doctor> impleme
                 .orderByAsc(Doctor::getName);
         return list(queryWrapper);
     }
-
 }

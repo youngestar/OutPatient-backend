@@ -6,6 +6,7 @@ import com.std.cuit.common.common.BaseResponse;
 import com.std.cuit.service.service.ClinicService;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +28,7 @@ public class ClinicController {
      */
     @RequestMapping("/add")
     @Operation(summary = "添加门诊", description = "添加门诊")
-    public BaseResponse<Long> addClinic(@RequestBody ClinicRequest clinicRequest){
+    public BaseResponse<Long> addClinic(@Parameter(description = "门诊信息") @RequestBody ClinicRequest clinicRequest){
         clinicService.validateClinic(clinicRequest);
         return clinicService.addClinic(clinicRequest);
     }
@@ -39,7 +40,7 @@ public class ClinicController {
      */
     @PostMapping("/update")
     @Operation(summary = "修改门诊信息", description = "修改门诊信息")
-    public BaseResponse<Boolean> updateClinic(@RequestBody ClinicRequest clinicRequest){
+    public BaseResponse<Boolean> updateClinic(@Parameter(description = "门诊信息") @RequestBody ClinicRequest clinicRequest){
         clinicService.validateClinic(clinicRequest);
         return clinicService.updateClinic(clinicRequest);
     }
@@ -51,7 +52,7 @@ public class ClinicController {
      */
     @PostMapping("/logic-delete")
     @Operation(summary = "逻辑删除门诊", description = "逻辑删除门诊")
-    public BaseResponse<Boolean> deleteClinicLogic(@RequestBody ClinicRequest clinicRequest){
+    public BaseResponse<Boolean> deleteClinicLogic(@Parameter(description = "门诊信息") @RequestBody ClinicRequest clinicRequest){
         return clinicService.deleteClinicLogic(clinicRequest);
     }
 
@@ -62,7 +63,7 @@ public class ClinicController {
      */
     @PostMapping("/recover")
     @Operation(summary = "恢复门诊", description = "恢复门诊")
-    public BaseResponse<Boolean> recoverClinic(@RequestBody ClinicRequest clinicRequest){
+    public BaseResponse<Boolean> recoverClinic(@Parameter(description = "门诊信息") @RequestBody ClinicRequest clinicRequest){
         return clinicService.recoverClinic(clinicRequest);
     }
 
@@ -73,7 +74,7 @@ public class ClinicController {
      */
     @PostMapping("/delete")
     @Operation(summary = "物理删除门诊", description = "物理删除门诊")
-    public BaseResponse<Boolean> deleteClinicPhysically(@RequestBody ClinicRequest clinicRequest){
+    public BaseResponse<Boolean> deleteClinicPhysically(@Parameter(description = "门诊信息") @RequestBody ClinicRequest clinicRequest){
         return clinicService.deleteClinicPhysically(clinicRequest);
     }
     /**
@@ -83,7 +84,7 @@ public class ClinicController {
      */
     @GetMapping("/detail-get")
     @Operation(summary = "获取门诊详情", description = "获取门诊详情")
-    public BaseResponse<ClinicRequest> getClinicDetail(@RequestParam("clinicId") Long clinicId){
+    public BaseResponse<ClinicRequest> getClinicDetail(@Parameter(description = "门诊ID") @RequestParam("clinicId") Long clinicId){
         return clinicService.getClinicDetail(clinicId);
     }
 }

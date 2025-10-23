@@ -23,6 +23,7 @@
         <module>OutPatient-backend-auth</module>
         <module>OutPatient-backend-service</module>
         <module>OutPatient-backend-data-analysis</module>
+        <module>OutPatient-backend-medical</module>
     </modules>
 
     <properties>

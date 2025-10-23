@@ -9,6 +9,7 @@ import com.std.cuit.model.DTO.UserUpdateRequest;
 import com.std.cuit.service.service.AuthService;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +39,7 @@ public class AuthController {
      */
     @GetMapping("/email")
     @Operation(summary = "发送邮箱验证码", description = "发送邮箱验证码")
-    public BaseResponse<Void> sendEmailCode(@RequestParam String email) {
+    public BaseResponse<Void> sendEmailCode(@Parameter(description = "邮箱地址") @RequestParam String email) {
         authService.sendEmailCode(email);
         return ResultUtils.success(null);
     }
@@ -52,8 +53,8 @@ public class AuthController {
     @GetMapping("/IsExists")
     @Operation(summary = "检查用户名或邮箱是否已存在", description = "检查用户名或邮箱是否已存在")
     public BaseResponse<Boolean> checkUserExists(
-            @RequestParam(required = false) String username,
-            @RequestParam(required = false) String email) {
+            @Parameter(description = "用户名") @RequestParam(required = false) String username,
+            @Parameter(description = "邮箱") @RequestParam(required = false) String email) {
         boolean exists = authService.checkUserExists(username, email);
         return ResultUtils.success(exists);
     }
@@ -65,7 +66,7 @@ public class AuthController {
      */
     @PostMapping("/register")
     @Operation(summary = "用户注册", description = "用户注册")
-    public BaseResponse<Void> register(@RequestBody UserRegisterRequest registerRequest) {
+    public BaseResponse<Void> register(@Parameter(description = "注册信息") @RequestBody UserRegisterRequest registerRequest) {
         authService.register(registerRequest);
         return ResultUtils.success(null);
     }
@@ -77,7 +78,7 @@ public class AuthController {
      */
     @PostMapping("/login")
     @Operation(summary = "用户登录", description = "用户登录")
-    public BaseResponse<UserVO> login(@RequestBody UserLoginRequest loginRequest) {
+    public BaseResponse<UserVO> login(@Parameter(description = "登录信息") @RequestBody UserLoginRequest loginRequest) {
         UserVO userVO = authService.login(loginRequest);
         return ResultUtils.success(userVO);
     }
@@ -112,7 +113,7 @@ public class AuthController {
      */
     @PostMapping("/updatePassword")
     @Operation(summary = "修改密码", description = "修改密码")
-    public BaseResponse<Void> updatePassword(@RequestParam String oldPassword, @RequestParam String newPassword) {
+    public BaseResponse<Void> updatePassword(@Parameter(description = "旧密码") @RequestParam String oldPassword, @RequestParam String newPassword) {
         authService.updatePassword(oldPassword, newPassword);
         return ResultUtils.success(null);
     }
@@ -124,7 +125,7 @@ public class AuthController {
      */
     @PostMapping("/updateAvatar")
     @Operation(summary = "上传或更新用户头像", description = "上传或更新用户头像")
-    public BaseResponse<String> updateAvatar(@RequestParam("file") MultipartFile file) {
+    public BaseResponse<String> updateAvatar(@Parameter(description = "头像文件") @RequestParam("file") MultipartFile file) {
         String avatarUrl = authService.updateAvatar(file);
         return ResultUtils.success(avatarUrl);
     }
@@ -136,7 +137,7 @@ public class AuthController {
      */
     @PostMapping("/updateInfo")
     @Operation(summary = "更新用户个人信息", description = "更新用户个人信息")
-    public BaseResponse<UserVO> updateUserInfo(@RequestBody UserUpdateRequest updateRequest) {
+    public BaseResponse<UserVO> updateUserInfo(@Parameter(description = "用户个人信息") @RequestBody UserUpdateRequest updateRequest) {
         log.info("接收到更新用户个人信息请求");
         UserVO userVO = authService.updateUserInfo(updateRequest);
         return ResultUtils.success(userVO);

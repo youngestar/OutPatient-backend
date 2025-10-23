@@ -33,4 +33,5 @@ public interface DoctorService extends IService<Doctor> {
 
     //根据医生姓名模糊查询医生列表
     List<Doctor> getDoctorsByName(String name);
+
 }

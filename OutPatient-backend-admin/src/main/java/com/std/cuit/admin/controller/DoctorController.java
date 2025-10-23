@@ -7,6 +7,7 @@ import com.std.cuit.common.common.BaseResponse;
 import com.std.cuit.service.service.DoctorService;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -34,8 +35,8 @@ public class DoctorController {
     @PostMapping(value = "/Doctor-add", consumes = "multipart/form-data")
     @Operation(summary = "添加医生", description = "添加医生")
     public BaseResponse<Long> addDoctor(
-            @RequestPart DoctorRequest doctorRequest,
-            @RequestPart(value = "avatarFile", required = false) MultipartFile avatarFile
+            @Parameter(description = "医生信息") @RequestPart DoctorRequest doctorRequest,
+            @Parameter(description = "头像文件") @RequestPart(value = "avatarFile", required = false) MultipartFile avatarFile
     ) {
         return doctorService.addDoctor(doctorRequest);
     }
@@ -50,8 +51,8 @@ public class DoctorController {
     @PostMapping(value = "/Doctor-update", consumes = "multipart/form-data")
     @Operation(summary = "修改医生信息", description = "修改医生信息")
     public BaseResponse<Boolean> updateDoctor(
-            @RequestPart DoctorRequest doctorRequest,
-            @RequestPart(value = "avatarFile", required = false) MultipartFile avatarFile
+            @Parameter(description = "医生信息") @RequestPart DoctorRequest doctorRequest,
+            @Parameter(description = "头像文件") @RequestPart(value = "avatarFile", required = false) MultipartFile avatarFile
     ) {
         log.info("修改医生信息: {}", doctorRequest);
         if (avatarFile != null) {
@@ -68,7 +69,7 @@ public class DoctorController {
      */
     @PostMapping("/Doctor-delete")
     @Operation(summary = "删除医生", description = "删除医生")
-    public BaseResponse<Boolean> deleteDoctor(@RequestBody Map<String, Long> request) {
+    public BaseResponse<Boolean> deleteDoctor(@Parameter (description = "请求参数") @RequestBody Map<String, Long> request) {
         Long doctorId = request.get("doctorId");
         return doctorService.deleteDoctor(doctorId);
     }
@@ -81,7 +82,7 @@ public class DoctorController {
      */
     @GetMapping("/Doctor-get")
     @Operation(summary = "获取医生详情", description = "获取医生详情")
-    public BaseResponse<DoctorVO> getDoctorDetail(@RequestParam("doctorId") Long doctorId) {
+    public BaseResponse<DoctorVO> getDoctorDetail(@Parameter (description = "医生ID") @RequestParam("doctorId") Long doctorId) {
         return doctorService.getDoctorDetail(doctorId);
     }
 

@@ -9,15 +9,10 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>OutPatient-backend-data-analysis</artifactId>
+    <groupId>com.std-cuit</groupId>
+    <artifactId>OutPatient-backend-medical</artifactId>
 
-    <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
     <dependencies>
-
         <!-- 自定义模块 -->
         <dependency>
             <groupId>com.graduation</groupId>
@@ -114,5 +109,10 @@
             <artifactId>spring-data-redis</artifactId>
         </dependency>
     </dependencies>
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
 </project>

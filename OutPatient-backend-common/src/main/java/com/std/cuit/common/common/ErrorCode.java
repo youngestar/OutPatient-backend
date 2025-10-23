@@ -40,7 +40,8 @@ public enum ErrorCode {
     SYSTEM_ERROR(50000, "系统内部异常"),
     DATABASE_ERROR(50001, "数据库操作异常"),
     NETWORK_ERROR(50002, "网络异常"),
-    OPERATION_ERROR(50003, "操作失败");
+    OPERATION_ERROR(50003, "操作失败"),
+    NOT_FOUND_ERROR(50004, "未找到该资源");
 
     private final int code;
     private final String message;
