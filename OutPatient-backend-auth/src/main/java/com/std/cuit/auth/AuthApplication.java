@@ -13,8 +13,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @SpringBootApplication
 @EnableDiscoveryClient  // 启用Nacos服务发现
 @EnableAsync            // 启用异步处理
-@ComponentScan(basePackages = {"com.graduation"}) // 扫描整个项目的组件
-@MapperScan("com.graduation.service.mapper") // 添加这行，扫描Mapper接口
+// 扫描整个项目的组件
+@MapperScan("com.std.cuit.service.mapper") // 添加这行，扫描Mapper接口
 public class AuthApplication {
     public static void main(String[] args) {
         SpringApplication.run(AuthApplication.class, args);

@@ -1,5 +1,5 @@
 server:
-  port: 8203
+  port: 8204
 spring:
   application:
     name: Outpatient-backend-data-analysis
@@ -100,3 +100,18 @@ sa-token:
   is-read-header: true
   is-read-cookie: false
   dynamic-active-timeout: true
+
+# Data-Analysis模块配置
+data-analysis:
+  global:
+    data-cache-time: 60
+    stat-range-days: 30
+    max-query-range-days: 365
+    max-chart-points: 100
+    real-time-stats: true
+    real-time-interval: 300
+    max-export-rows: 10000
+    data-masking: true
+    report-save-path: "/data/reports"
+    enable-prediction: false
+    model-path: "/data/models"

@@ -1,0 +1,15 @@
+# Common模块配置
+common:
+  global:
+    env: "dev"
+    timezone: "Asia/Shanghai"
+    charset: "UTF-8"
+    date-format: "yyyy-MM-dd"
+    datetime-format: "yyyy-MM-dd HH:mm:ss"
+    time-format: "HH:mm:ss"
+    language: "zh-CN"
+    version: "1.0.0"
+    api-version: "v1"
+    response-encrypt: false
+    request-log: true
+    sql-log: false

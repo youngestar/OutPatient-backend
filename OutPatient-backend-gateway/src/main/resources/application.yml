@@ -115,3 +115,22 @@ logging:
     com.graduation.gateway: DEBUG
     org.springframework.cloud.gateway: INFO
     cn.dev33.satoken: WARN
+
+# Gateway模块配置
+gateway:
+  global:
+    enabled: true
+    version: "1.0.0"
+    request-timeout: 30
+    connect-timeout: 10
+    global-rate-limit: 1000
+    ip-rate-limit: 100
+    user-rate-limit: 50
+    retry-count: 3
+    circuit-breaker-timeout: 5000
+    circuit-breaker-error-threshold: 50
+    white-list-ips: ["127.0.0.1", "localhost"]
+    black-list-ips: []
+    enable-request-log: true
+    enable-response-log: false
+    sensitive-headers: ["Authorization", "Cookie", "Set-Cookie"]

@@ -69,6 +69,16 @@ public class UserVO {
     private String idCard;
 
     /**
+     * 身份证号脱敏显示
+     */
+    public String getIdCardMask() {
+        if (idCard == null || idCard.length() <= 8) {
+            return idCard;
+        }
+        return idCard.substring(0, 4) + "********" + idCard.substring(idCard.length() - 4);
+    }
+
+    /**
      * 地区(省市区)
      */
     private String region;
@@ -82,7 +92,6 @@ public class UserVO {
      * 用户角色(0-患者,1-医生,2-管理员)
      */
     private Integer role;
-
     /**
      * 创建时间
      */

@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.std.cuit.common.common.Constants;
+import com.std.cuit.common.common.ErrorCode;
+import com.std.cuit.common.exception.ThrowUtils;
 import com.std.cuit.model.DTO.*;
 import com.std.cuit.model.VO.AiConsultResponse;
 import com.std.cuit.model.entity.AiConsultRecord;
@@ -185,12 +187,11 @@ public class AIServiceImpl extends ServiceImpl<AiConsultRecordMapper, AiConsultR
     @Override
     public SseEmitter createSseConnection(AiConsultConnectionRequest request) {
         // 验证必要参数
-        if (request.getPatientId() == null) {
-            throw new IllegalArgumentException("患者ID不能为空");
-        }
-        if (request.getAppointmentId() == null) {
-            throw new IllegalArgumentException("预约ID不能为空");
-        }
+        ThrowUtils.throwIf(request.getPatientId() == null
+                , ErrorCode.PARAMS_ERROR, "患者ID不能为空");
+
+        ThrowUtils.throwIf(request.getAppointmentId() == null
+                , ErrorCode.PARAMS_ERROR, "预约ID不能为空");
         
         String sessionId = request.getSessionId();
         Long patientId = request.getPatientId();
@@ -266,17 +267,15 @@ public class AIServiceImpl extends ServiceImpl<AiConsultRecordMapper, AiConsultR
                 existingSession = getConsultSession(sessionId);
             }
             
-            if (existingSession == null) {
-                throw new IllegalArgumentException("无效的会话ID");
-            }
+            ThrowUtils.throwIf(existingSession == null
+                    , ErrorCode.NOT_FOUND_ERROR, "无效的会话Id");
             
             // 验证会话关联的患者ID和预约ID是否匹配
-            if (!patientId.equals(existingSession.getPatientId())) {
-                throw new IllegalArgumentException("会话关联的患者ID与当前用户不匹配");
-            }
-            if (!request.getAppointmentId().equals(existingSession.getAppointmentId())) {
-                throw new IllegalArgumentException("会话关联的预约ID与请求不匹配");
-            }
+            ThrowUtils.throwIf(!patientId.equals(existingSession.getPatientId())
+                    , ErrorCode.PARAMS_ERROR, "会话关联的患者ID与请求不匹配");
+
+            ThrowUtils.throwIf(!request.getAppointmentId().equals(existingSession.getAppointmentId())
+                    , ErrorCode.PARAMS_ERROR, "会话关联的预约ID与请求不匹配");
         }
         
         // 发送连接成功事件
@@ -303,15 +302,14 @@ public class AIServiceImpl extends ServiceImpl<AiConsultRecordMapper, AiConsultR
         String question = request.getQuestion();
         
         // 验证必要参数
-        if (patientId == null) {
-            throw new IllegalArgumentException("患者ID不能为空");
-        }
-        if (appointmentId == null) {
-            throw new IllegalArgumentException("预约ID不能为空");
-        }
-        if (question == null || question.trim().isEmpty()) {
-            throw new IllegalArgumentException("问题内容不能为空");
-        }
+        ThrowUtils.throwIf(patientId == null
+                , ErrorCode.PARAMS_ERROR, "患者ID不能为空");
+
+        ThrowUtils.throwIf(appointmentId == null
+                , ErrorCode.PARAMS_ERROR, "预约ID不能为空");
+
+        ThrowUtils.throwIf(question == null|| question.isEmpty()
+                , ErrorCode.PARAMS_ERROR, "问题不能为空");
         
         // 获取或创建会话
         ConsultSession session;
@@ -341,18 +339,16 @@ public class AIServiceImpl extends ServiceImpl<AiConsultRecordMapper, AiConsultR
             if (session == null) {
                 // 如果Redis中不存在，从数据库尝试获取
                 session = getConsultSession(sessionId);
-                if (session == null) {
-                    throw new IllegalArgumentException("无效的会话ID");
-                }
+                ThrowUtils.throwIf(session == null
+                        , ErrorCode.NOT_FOUND_ERROR, "无效的会话Id");
             }
             
             // 验证会话关联的患者ID和预约ID是否匹配
-            if (!patientId.equals(session.getPatientId())) {
-                throw new IllegalArgumentException("会话关联的患者ID与请求不匹配");
-            }
-            if (!appointmentId.equals(session.getAppointmentId())) {
-                throw new IllegalArgumentException("会话关联的预约ID与请求不匹配");
-            }
+            ThrowUtils.throwIf(!patientId.equals(session.getPatientId())
+                    , ErrorCode.PARAMS_ERROR, "会话关联的患者ID与请求不匹配");
+
+            ThrowUtils.throwIf(!appointmentId.equals(session.getAppointmentId())
+                    , ErrorCode.PARAMS_ERROR, "会话关联的预约ID与请求不匹配");
         }
 
         // 确保version不为null

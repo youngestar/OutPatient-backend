@@ -100,3 +100,18 @@ sa-token:
   is-read-header: true
   is-read-cookie: false
   dynamic-active-timeout: true
+
+# Auth模块配置
+auth:
+  global:
+    token-expire: 2592000
+    verify-code-expire: 5
+    verify-code-length: 6
+    max-login-attempts: 5
+    login-lock-time: 30
+    password-min-length: 6
+    password-max-length: 20
+    session-timeout: 30
+    allow-multi-login: true
+    avatar-allowed-types: ["jpg", "jpeg", "png", "gif"]
+    avatar-max-size: 2048

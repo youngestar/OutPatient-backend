@@ -17,16 +17,22 @@ import com.std.cuit.service.utils.minio.MinioUtils;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
 public class DoctorServiceImpl extends ServiceImpl<DoctorMapper, Doctor> implements DoctorService {
 
+    @Lazy
     @Resource
     private ScheduleService scheduleService;
 
@@ -42,7 +48,11 @@ public class DoctorServiceImpl extends ServiceImpl<DoctorMapper, Doctor> impleme
     @Resource
     private MinioUtils minioUtils;
 
-    //TODO: 添加
+    /**
+     * 添加医生信息
+     * @param doctorRequest 医生信息
+     * @return 医生ID
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BaseResponse<Long> addDoctor(DoctorRequest doctorRequest) {
@@ -112,6 +122,10 @@ public class DoctorServiceImpl extends ServiceImpl<DoctorMapper, Doctor> impleme
         return ResultUtils.success(doctor.getDoctorId());
     }
 
+    /**
+     * 医生信息检查
+     * @param doctorRequest 医生信息
+     */
     @Override
     public void checkDoctor(DoctorRequest doctorRequest) {
         ThrowUtils.throwIf(doctorRequest ==  null
@@ -131,6 +145,11 @@ public class DoctorServiceImpl extends ServiceImpl<DoctorMapper, Doctor> impleme
 
     }
 
+    /**
+     * 更新医生信息
+     * @param doctorRequest 医生信息
+     * @return 是否更新成功
+     */
     @Override
     public BaseResponse<Boolean> updateDoctor(DoctorRequest doctorRequest) {
         log.info("更新医生信息: {}", doctorRequest);
@@ -264,6 +283,11 @@ public class DoctorServiceImpl extends ServiceImpl<DoctorMapper, Doctor> impleme
 
     }
 
+    /**
+     * 删除医生信息
+     * @param doctorId 医生ID
+     * @return BaseResponse<Boolean>
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BaseResponse<Boolean> deleteDoctor(Long doctorId) {
@@ -324,7 +348,11 @@ public class DoctorServiceImpl extends ServiceImpl<DoctorMapper, Doctor> impleme
 
     }
 
-    // TODO: 查询
+    /**
+     * 获取医生信息详情
+     * @param doctorId 医生ID
+     * @return BaseResponse<DoctorVO>
+     */
     @Override
     public BaseResponse<DoctorVO> getDoctorDetail(Long doctorId) {
         log.info("查询医生信息详情");
@@ -348,6 +376,11 @@ public class DoctorServiceImpl extends ServiceImpl<DoctorMapper, Doctor> impleme
     }
 
 
+    /**
+     * 根据用户ID获取医生信息
+     * @param userId 用户ID
+     * @return Doctor
+     */
     @Override
     public Doctor getDoctorByUserId(Long userId) {
         if (userId == null) {
@@ -382,5 +415,51 @@ public class DoctorServiceImpl extends ServiceImpl<DoctorMapper, Doctor> impleme
         queryWrapper.orderByAsc(Doctor::getClinicId)
                 .orderByAsc(Doctor::getName);
         return list(queryWrapper);
+    }
+
+    @Override
+    public Map<Long, Integer> getDoctorFatigueStats(List<Long> doctorIds) {
+        log.info("获取医生疲劳度统计, doctorIds: {}", doctorIds);
+
+        if (doctorIds == null || doctorIds.isEmpty()) {
+            return new HashMap<>();
+        }
+
+        Map<Long, Integer> result = new HashMap<>();
+
+        // 获取当前日期
+        LocalDate today = LocalDate.now();
+
+        // 获取当前月的第一天和最后一天
+        LocalDate firstDayOfMonth = YearMonth.from(today).atDay(1);
+        LocalDate lastDayOfMonth = YearMonth.from(today).atEndOfMonth();
+
+        // 获取最近7天的开始日期
+        LocalDate sevenDaysAgo = today.minusDays(7);
+
+        // 查询每个医生的排班情况
+        for (Long doctorId : doctorIds) {
+            // 查询最近7天的排班次数
+            long recentCount = scheduleService.count(new LambdaQueryWrapper<Schedule>()
+                    .eq(Schedule::getDoctorId, doctorId)
+                    .ge(Schedule::getScheduleDate, sevenDaysAgo)
+                    .le(Schedule::getScheduleDate, today)
+                    .eq(Schedule::getStatus, 1)); // 1表示有效
+
+            // 查询本月的累计排班次数
+            long monthlyCount = scheduleService.count(new LambdaQueryWrapper<Schedule>()
+                    .eq(Schedule::getDoctorId, doctorId)
+                    .ge(Schedule::getScheduleDate, firstDayOfMonth)
+                    .le(Schedule::getScheduleDate, lastDayOfMonth)
+                    .eq(Schedule::getStatus, 1)); // 1表示有效
+
+            // 计算疲劳度：最近7天的排班次数 × 2 + 本月累计排班次数
+            int fatigue = (int) (recentCount * 2 + monthlyCount);
+
+            result.put(doctorId, fatigue);
+        }
+
+        return result;
+
     }
 }

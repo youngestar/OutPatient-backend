@@ -7,6 +7,7 @@ import com.std.cuit.common.common.ErrorCode;
 import com.std.cuit.common.common.ResultUtils;
 import com.std.cuit.common.exception.ThrowUtils;
 import com.std.cuit.service.service.DataAnalysisService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -33,43 +34,33 @@ public class DataAnalysisController {
 
     /**
      * 获取患者就诊频次统计
-     * @param doctorId 医生ID
-     * @param startDate 开始时间
-     * @param endDate 结束时间
-     * @param timeUnit 时间单位
-     * @return 患者就诊频次统计
      */
     @GetMapping("/patient-visit-frequency")
+    @Operation(summary = "患者就诊频次统计", description = "获取患者就诊频次统计")
     public BaseResponse<Map<String, Integer>> getPatientVisitFrequency(
             @Parameter(description = "医生ID") @RequestParam Long doctorId,
             @Parameter(description = "开始时间") @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
             @Parameter(description = "结束时间") @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
-            @Parameter(description = "时间单位") @RequestParam(required = false, defaultValue = "month") String timeUnit){
-        log.info("接收到获取患者就诊频次统计请求, doctorId: {}, startDate: {}, endDate: {}, timeUnit: {}", doctorId, startDate, endDate, timeUnit);
+            @Parameter(description = "时间单位") @RequestParam(required = false, defaultValue = "month") String timeUnit) {
+        log.info("获取患者就诊频次统计, doctorId: {}, startDate: {}, endDate: {}, timeUnit: {}",
+                doctorId, startDate, endDate, timeUnit);
         Map<String, Integer> data = dataAnalysisService.getPatientVisitFrequency(doctorId, startDate, endDate, timeUnit);
-        ThrowUtils.throwIf(data == null
-                , ErrorCode.NULL_ERROR, "数据为空");
         return ResultUtils.success(data);
     }
 
     /**
      * 获取AI问诊使用频率统计
-     * @param doctorId 医生ID
-     * @param startDate 开始时间
-     * @param endDate 结束时间
-     * @param timeUnit 时间单位
-     * @return AI问诊使用频率统计
      */
     @GetMapping("/ai-consult-frequency")
+    @Operation(summary = "AI问诊使用频率统计", description = "获取AI问诊使用频率统计")
     public BaseResponse<Map<String, Integer>> getAiConsultFrequency(
             @Parameter(description = "医生ID") @RequestParam Long doctorId,
             @Parameter(description = "开始时间") @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
             @Parameter(description = "结束时间") @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
-            @Parameter(description = "时间单位") @RequestParam(required = false, defaultValue = "month") String timeUnit){
-        log.info("接收到获取AI问诊使用频率统计请求, doctorId: {}, startDate: {}, endDate: {}, timeUnit: {}", doctorId, startDate, endDate, timeUnit);
+            @Parameter(description = "时间单位") @RequestParam(required = false, defaultValue = "month") String timeUnit) {
+        log.info("获取AI问诊使用频率统计, doctorId: {}, startDate: {}, endDate: {}, timeUnit: {}",
+                doctorId, startDate, endDate, timeUnit);
         Map<String, Integer> data = dataAnalysisService.getAiConsultFrequency(doctorId, startDate, endDate, timeUnit);
-        ThrowUtils.throwIf(data == null
-                , ErrorCode.NULL_ERROR, "数据为空");
         return ResultUtils.success(data);
     }
 

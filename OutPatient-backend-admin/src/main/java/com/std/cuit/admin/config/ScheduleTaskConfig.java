@@ -4,6 +4,7 @@ import com.std.cuit.service.service.ScheduleService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
@@ -19,47 +20,52 @@ import java.time.temporal.TemporalAdjusters;
 @EnableScheduling
 public class ScheduleTaskConfig {
 
-    @Resource
+
     private ScheduleService scheduleService;
 
+    @Resource
+    public void setScheduleService(@Lazy ScheduleService scheduleService) {
+        this.scheduleService = scheduleService;
+    }
+
     /**
-     * 每两周进行一次排班（每两周的周日凌晨2点执行）
-     * 生成未来14天的排班
+     * 每周日凌晨2点执行，生成未来14天的排班
      */
-    @Scheduled(cron = "0 0 2 * * 0") // 每周日凌晨2点执行
-    public void scheduleBiweekly() {
-        log.info("开始执行排班任务...");
+    @Scheduled(cron = "${schedule.task.cron:0 0 2 * * SUN}")
+    public void generateWeeklySchedule() {
+        log.info("开始执行每周排班生成任务...");
 
         try {
-            // 获取下一个周一的日期
-            LocalDate nextMonday = LocalDate.now().with(TemporalAdjusters.next(DayOfWeek.MONDAY));
+            LocalDate startDate = LocalDate.now().plusDays(1); // 从明天开始
+            LocalDate endDate = startDate.plusDays(13); // 生成14天
 
-            // 生成未来14天的排班（2周）
-            for (int i = 0; i < 14; i++) {
-                LocalDate scheduleDate = nextMonday.plusDays(i);
-                generateDailySchedule(scheduleDate);
+            int totalGenerated = 0;
+            for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+                int count = scheduleService.generateSchedulesForDate(date);
+                totalGenerated += count;
             }
 
-            log.info("排班任务执行完成，已生成未来14天的排班");
+            log.info("排班生成任务完成，共生成 {} 个排班记录", totalGenerated);
         } catch (Exception e) {
-            log.error("排班任务执行失败", e);
+            log.error("排班生成任务执行失败", e);
         }
     }
 
     /**
-     * 每天凌晨1点检查未来第7天是否已排班
-     * 如果未排班则自动生成
+     * 每天凌晨1点检查未来第7天排班
      */
     @Scheduled(cron = "0 0 1 * * ?")
-    public void checkNextSeventhDay() {
-        log.info("开始检查未来第7天是否已排班...");
+    public void checkAndGenerateSchedule() {
+        LocalDate targetDate = LocalDate.now().plusDays(7);
+        log.info("检查未来第7天({})的排班情况", targetDate);
 
         try {
-            LocalDate targetDate = LocalDate.now().plusDays(7);
-            checkAndGenerateSchedule(targetDate);
-            log.info("未来第7天排班检查完成");
+            if (!scheduleService.isScheduleComplete(targetDate)) {
+                log.info("检测到日期 {} 排班不完整，开始生成", targetDate);
+                scheduleService.generateSchedulesForDate(targetDate);
+            }
         } catch (Exception e) {
-            log.error("检查未来第7天排班失败", e);
+            log.error("检查排班失败", e);
         }
     }
 
@@ -68,17 +74,16 @@ public class ScheduleTaskConfig {
      */
     private void generateDailySchedule(LocalDate scheduleDate) {
         try {
-            // TODO: 这里需要根据实际业务逻辑生成排班
-            // 示例逻辑：
-            // 1. 获取所有有效的医生和门诊
-            // 2. 根据排班规则生成医生的排班计划
-            // 3. 调用scheduleService.addSchedule添加排班
+            log.info("开始为日期 {} 生成排班", scheduleDate);
 
-            log.debug("为日期 {} 生成排班", scheduleDate);
+            // 调用Service层的排班生成方法
+            int generatedCount = scheduleService.generateSchedulesForDate(scheduleDate);
 
-            // 模拟生成排班数据
-            // 实际项目中应该从数据库获取医生和门诊信息
-            generateSampleSchedules(scheduleDate);
+            if (generatedCount > 0) {
+                log.info("为日期 {} 成功生成 {} 个排班", scheduleDate, generatedCount);
+            } else {
+                log.info("日期 {} 无需生成新排班", scheduleDate);
+            }
 
         } catch (Exception e) {
             log.error("生成日期 {} 的排班失败", scheduleDate, e);
@@ -90,18 +95,15 @@ public class ScheduleTaskConfig {
      */
     private void checkAndGenerateSchedule(LocalDate targetDate) {
         try {
-            // TODO: 检查指定日期是否已经有足够的排班
-            // 示例逻辑：
-            // 1. 查询指定日期的排班数量
-            // 2. 如果排班数量不足，则自动生成
+            log.info("检查日期 {} 的排班完整性", targetDate);
 
-            boolean hasEnoughSchedules = checkScheduleCount(targetDate);
+            boolean isComplete = scheduleService.isScheduleComplete(targetDate);
 
-            if (!hasEnoughSchedules) {
-                log.warn("日期 {} 排班数量不足，开始自动生成", targetDate);
+            if (!isComplete) {
+                log.warn("日期 {} 排班不完整，开始自动生成", targetDate);
                 generateDailySchedule(targetDate);
             } else {
-                log.info("日期 {} 排班数量正常", targetDate);
+                log.info("日期 {} 排班完整", targetDate);
             }
 
         } catch (Exception e) {
@@ -113,11 +115,19 @@ public class ScheduleTaskConfig {
      * 检查指定日期的排班数量是否足够
      */
     private boolean checkScheduleCount(LocalDate date) {
-        // TODO: 实现实际的排班数量检查逻辑
-        // 示例：查询该日期的有效排班数量，判断是否达到预期值
+        try {
+            int actualCount = scheduleService.getScheduleCountByDate(date);
+            int expectedCount = getExpectedScheduleCount(date);
 
-        // 临时返回true，实际项目中需要从数据库查询
-        return true;
+            boolean hasEnough = actualCount >= expectedCount * 0.8; // 达到预期80%即认为足够
+            log.debug("日期 {} 排班检查: 实际={}, 预期={}, 结果={}",
+                    date, actualCount, expectedCount, hasEnough ? "足够" : "不足");
+
+            return hasEnough;
+        } catch (Exception e) {
+            log.error("检查日期 {} 排班数量失败", date, e);
+            return false;
+        }
     }
 
     /**
@@ -131,5 +141,21 @@ public class ScheduleTaskConfig {
 
         // 这里可以调用scheduleService.addSchedule来添加具体的排班
         // 需要根据实际的医生、门诊信息来生成
+    }
+
+    /**
+     * 获取预期排班数量
+     */
+    private int getExpectedScheduleCount(LocalDate date) {
+        // 基于门诊数量、医生数量等计算预期排班数
+        // 这里可以进一步优化，比如考虑工作日和周末的不同需求
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+
+        // 工作日预期排班数量多于周末
+        if (dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY) {
+            return 30; // 周末预期30个排班
+        } else {
+            return 60; // 工作日预期60个排班
+        }
     }
 }

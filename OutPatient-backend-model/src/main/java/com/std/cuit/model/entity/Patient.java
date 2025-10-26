@@ -7,6 +7,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
@@ -15,7 +17,11 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("patient")
-public class Patient {
+public class Patient implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     /**
      * 患者ID
      */

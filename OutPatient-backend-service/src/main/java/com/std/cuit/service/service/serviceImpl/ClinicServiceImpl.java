@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 
 @Slf4j
@@ -212,4 +213,45 @@ public class ClinicServiceImpl extends ServiceImpl<ClinicMapper, Clinic> impleme
         log.info("获取门诊详情成功，门诊ID：{}", clinicId);
         return ResultUtils.success(clinicRequest);
     }
+
+    @Override
+    public List<Clinic> getClinicsByDeptId(Long deptId, boolean onlyActive) {
+        if (deptId == null) {
+            return null;
+        }
+
+        LambdaQueryWrapper<Clinic> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Clinic::getDeptId, deptId);
+
+        // 如果只查询有效门诊，则添加条件
+        if (onlyActive) {
+            queryWrapper.eq(Clinic::getIsActive, 1);
+        }
+
+        // 排序
+        queryWrapper.orderByAsc(Clinic::getClinicName);
+
+        return list(queryWrapper);
+    }
+
+    @Override
+    public List<Clinic> getClinicsByName(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            return null;
+        }
+
+        LambdaQueryWrapper<Clinic> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(Clinic::getClinicName, name);
+
+        // 默认只查询有效门诊
+        queryWrapper.eq(Clinic::getIsActive, 1);
+
+        // 排序
+        queryWrapper.orderByAsc(Clinic::getDeptId)
+                .orderByAsc(Clinic::getClinicName);
+
+        return list(queryWrapper);
+    }
+
+
 }

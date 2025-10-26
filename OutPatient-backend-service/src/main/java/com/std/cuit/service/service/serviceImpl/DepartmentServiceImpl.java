@@ -7,6 +7,7 @@ import com.std.cuit.model.DTO.DepartmentRequest;
 import com.std.cuit.common.common.BaseResponse;
 import com.std.cuit.common.common.ErrorCode;
 import com.std.cuit.common.common.ResultUtils;
+import com.std.cuit.model.VO.DepartmentVO;
 import com.std.cuit.model.entity.Department;
 import com.std.cuit.common.exception.ThrowUtils;
 import com.std.cuit.service.mapper.DepartmentMapper;
@@ -15,6 +16,8 @@ import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -174,5 +177,40 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
                 , ErrorCode.DATA_NOT_EXISTS, "科室不存在");
 
         return ResultUtils.success(department);
+    }
+
+    @Override
+    public List<DepartmentVO> getDepartmentList(boolean onlyActive) {
+        LambdaQueryWrapper<Department> queryWrapper = new LambdaQueryWrapper<>();
+
+        // 如果只查询有效科室，则添加条件
+        if (onlyActive) {
+            queryWrapper.eq(Department::getIsActive, 1);
+        }
+
+        // 按科室ID和科室名称排序
+        queryWrapper.orderByAsc(Department::getDeptId)
+                .orderByAsc(Department::getDeptName);
+
+        List<Department> departmentList = this.list(queryWrapper);
+        return departmentList.stream()
+                .map(department -> DepartmentVO.builder()
+                        .deptId(department.getDeptId())
+                        .deptName(department.getDeptName())
+                        .isActive(department.getIsActive())
+                        .build())
+                .toList();
+    }
+
+    @Override
+    public List<DepartmentVO> getDepartmentListByIds(List<Long> deptIds) {
+        List<Department> departmentList = this.listByIds(deptIds);
+        return departmentList.stream()
+                .map(department -> DepartmentVO.builder()
+                        .deptId(department.getDeptId())
+                        .deptName(department.getDeptName())
+                        .isActive(department.getIsActive())
+                        .build())
+                .toList();
     }
 }

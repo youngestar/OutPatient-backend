@@ -38,6 +38,11 @@ public class DoctorController {
             @Parameter(description = "医生信息") @RequestPart DoctorRequest doctorRequest,
             @Parameter(description = "头像文件") @RequestPart(value = "avatarFile", required = false) MultipartFile avatarFile
     ) {
+
+        if (avatarFile != null) {
+            doctorRequest.setAvatarFile(avatarFile);
+        }
+
         return doctorService.addDoctor(doctorRequest);
     }
 

@@ -18,6 +18,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class PatientServiceImpl extends ServiceImpl<PatientMapper, Patient> implements PatientService {
 
+    /**
+     * 根据用户ID查询患者
+     * @param userId 用户ID
+     * @return 患者对象
+     */
     @Override
     public Patient getByUserId(Long userId) {
         return getOne(new LambdaQueryWrapper<Patient>()
@@ -25,6 +30,11 @@ public class PatientServiceImpl extends ServiceImpl<PatientMapper, Patient> impl
                 .last("LIMIT 1"));
     }
 
+    /**
+     * 根据用户ID查询患者ID
+     * @param id 用户ID
+     * @return 患者ID
+     */
     @Override
     public Long getPatientIdByUserId(Long id) {
         return getOne(new LambdaQueryWrapper<Patient>()
