@@ -6,6 +6,7 @@ import com.std.cuit.common.common.BaseResponse;
 import com.std.cuit.common.common.ErrorCode;
 import com.std.cuit.common.common.ResultUtils;
 import com.std.cuit.common.exception.ThrowUtils;
+import com.std.cuit.data.analysis.config.DataAnalysisGlobalConfig;
 import com.std.cuit.service.service.DataAnalysisService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
 
 /**
@@ -32,10 +34,13 @@ public class DataAnalysisController {
     @Resource
     private DataAnalysisService dataAnalysisService;
 
+    @Resource
+    private DataAnalysisGlobalConfig globalConfig;
+
     /**
      * 获取患者就诊频次统计
      */
-    @GetMapping("/patient-visit-frequency")
+    @GetMapping("/patient/visit/frequency")
     @Operation(summary = "患者就诊频次统计", description = "获取患者就诊频次统计")
     public BaseResponse<Map<String, Integer>> getPatientVisitFrequency(
             @Parameter(description = "医生ID") @RequestParam Long doctorId,
@@ -58,6 +63,19 @@ public class DataAnalysisController {
             @Parameter(description = "开始时间") @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
             @Parameter(description = "结束时间") @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
             @Parameter(description = "时间单位") @RequestParam(required = false, defaultValue = "month") String timeUnit) {
+        // 添加参数验证
+        if (doctorId == null || doctorId <= 0) {
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "医生ID不能为空");
+        }
+
+        // 使用配置类中的参数进行验证
+        if (startDate != null && endDate != null) {
+            long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);
+            if (daysBetween > globalConfig.getMaxQueryRangeDays()) {
+                return ResultUtils.error(ErrorCode.PARAMS_ERROR,
+                        "查询时间范围不能超过 " + globalConfig.getMaxQueryRangeDays() + " 天");
+            }
+        }
         log.info("获取AI问诊使用频率统计, doctorId: {}, startDate: {}, endDate: {}, timeUnit: {}",
                 doctorId, startDate, endDate, timeUnit);
         Map<String, Integer> data = dataAnalysisService.getAiConsultFrequency(doctorId, startDate, endDate, timeUnit);

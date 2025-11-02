@@ -115,3 +115,7 @@ data-analysis:
     report-save-path: "/data/reports"
     enable-prediction: false
     model-path: "/data/models"
+
+ai-service:
+  api-url: https://api.deepseek.com
+  api-key: sk-11c289f3111c47aaa1a8e7665729934a
