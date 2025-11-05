@@ -1,4 +1,4 @@
-package com.std.cuit.controller;
+package com.std.cuit.medical.controller;
 
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.annotation.SaMode;

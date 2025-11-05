@@ -7,6 +7,9 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * Data-Analysis模块全局配置
+ * @author: withlia
+ * @date: 2020/10/29
+ * @description: Data-Analysis模块全局配置
  */
 @Data
 @Configuration

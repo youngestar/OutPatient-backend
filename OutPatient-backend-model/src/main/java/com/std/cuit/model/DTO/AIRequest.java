@@ -33,6 +33,7 @@ public class AIRequest {
     @JSONField(name = "response_format")
     @NotNull(message = "响应格式不能为空")
     @Valid
+    @Builder.Default
     private ResponseFormat responseFormat = new ResponseFormat();
 
     @JSONField(name = "temperature")

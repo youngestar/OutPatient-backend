@@ -15,6 +15,7 @@ import com.std.cuit.common.exception.ThrowUtils;
 import com.std.cuit.service.service.*;
 import com.std.cuit.service.utils.minio.MinioUtils;
 import com.std.cuit.service.utils.redis.RedissonService;
+import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -32,11 +33,22 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
+    @Resource
     private final MailService mailService;
+
+    @Resource
     private final RedissonService redissonService;
+
+    @Resource
     private final UserService userService;
+
+    @Resource
     private final PatientService patientService;
+
+    @Resource
     private final DoctorService doctorService;
+
+    @Resource
     private final MinioUtils minioUtils;
 
     @Override
@@ -50,6 +62,12 @@ public class AuthServiceImpl implements AuthService {
 
     }
 
+    /**
+     * 检查用户名或邮箱是否已存在
+     * @param username 用户名
+     * @param email 邮箱
+     * @return 存在返回true，不存在返回false
+     */
     @Override
     public boolean checkUserExists(String username, String email) {
         if (StringUtils.isNotBlank(username)) {
@@ -65,6 +83,10 @@ public class AuthServiceImpl implements AuthService {
         return false;
     }
 
+    /**
+     * 用户注册
+     * @param registerRequest 注册信息
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void register(UserRegisterRequest registerRequest) {
@@ -132,6 +154,11 @@ public class AuthServiceImpl implements AuthService {
         log.info("用户注册成功：{}", username);
     }
 
+    /**
+     * 用户登录
+     * @param loginRequest 登录信息
+     * @return 用户信息
+     */
     @Override
     public UserVO login(UserLoginRequest loginRequest) {
         ThrowUtils.throwIf(StringUtils.isBlank(loginRequest.getAccount())
@@ -186,11 +213,18 @@ public class AuthServiceImpl implements AuthService {
         return userVO;
     }
 
+    /**
+     * 退出登录
+     */
     @Override
     public void logout() {
         StpUtil.logout();
     }
 
+    /**
+     * 获取当前登录用户信息
+     * @return 用户信息
+     */
     @Override
     public UserVO getCurrentUserInfo() {
         ThrowUtils.throwIf(!StpUtil.isLogin()
@@ -264,6 +298,11 @@ public class AuthServiceImpl implements AuthService {
         return userVO;
     }
 
+    /**
+     * 修改用户密码
+     * @param oldPassword 旧密码
+     * @param newPassword 新密码
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updatePassword(String oldPassword, String newPassword) {
@@ -299,6 +338,11 @@ public class AuthServiceImpl implements AuthService {
         log.info("用户[{}]密码修改成功", user.getUsername());
     }
 
+    /**
+     * 更新用户头像
+     * @param file 头像文件
+     * @return 新头像URL
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public String updateAvatar(MultipartFile file) {
@@ -350,6 +394,11 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
+    /**
+     * 更新用户个人信息
+     * @param updateRequest 用户个人信息
+     * @return 更新后的用户信息
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public UserVO updateUserInfo(UserUpdateRequest updateRequest) {

@@ -1,4 +1,4 @@
-package com.std.cuit.admin.config;
+package com.std.cuit.medical.config;
 
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
@@ -27,10 +27,11 @@ public class RedissonConfig {
         Config config = new Config();
 
         // 单节点配置
+        String address = String.format("redis://%s:%s", redisHost, redisPort);
         config.useSingleServer()
-                .setAddress("redis://" + redisHost + ":" + redisPort)
+                .setAddress(address)
                 .setDatabase(redisDatabase)
-                .setPassword(redisPassword)
+                .setPassword(redisPassword.isEmpty() ? null : redisPassword)
                 .setConnectionPoolSize(10)
                 .setConnectionMinimumIdleSize(2)
                 .setTimeout(5000);

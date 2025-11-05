@@ -72,6 +72,25 @@ minio:
   secret-key: minioadmin           # 秘密密钥
   bucket-name: user-avatar         # 存储桶名称
 
+# RabbitMQ 配置
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    # 连接超时配置
+    connection-timeout: 5000
+    # 模板配置
+    template:
+      retry:
+        enabled: true
+        initial-interval: 1000ms
+        max-attempts: 3
+        multiplier: 1.0
+        max-interval: 10000ms
+
+
 # Sa-Token配置（Gateway专用）
 sa-token:
   # taken 名称
@@ -115,3 +134,7 @@ auth:
     allow-multi-login: true
     avatar-allowed-types: ["jpg", "jpeg", "png", "gif"]
     avatar-max-size: 2048
+
+ai-service:
+  api-url: https://api.deepseek.com
+  api-key: sk-11c289f3111c47aaa1a8e7665729934a

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.std.cuit.service.mapper.DiagnosisMapper">
+    <resultMap id="BaseResultMap" type="com.std.cuit.model.entity.Diagnosis">
+        <id column="diag_id" jdbcType="BIGINT" property="diagId"/>
+        <result column="appointment_id" jdbcType="BIGINT" property="appointmentId"/>
+        <result column="doctor_id" jdbcType="BIGINT" property="doctorId"/>
+        <result column="patient_id" jdbcType="BIGINT" property="patientId"/>
+        <result column="diagnosis_result" jdbcType="VARCHAR" property="diagnosisResult"/>
+        <result column="examination" jdbcType="VARCHAR" property="examination"/>
+        <result column="prescription" jdbcType="VARCHAR" property="prescription"/>
+        <result column="advice" jdbcType="VARCHAR" property="advice"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+</mapper>

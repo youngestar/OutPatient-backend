@@ -12,7 +12,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
  */
 @SpringBootApplication
 @EnableDiscoveryClient  // 启用Nacos服务发现
-@EnableAsync            // 启用异步处理
+@EnableAsync            // 启用
+@ComponentScan({"com.std.cuit.auth", "com.std.cuit.service"})// 异步处理
 // 扫描整个项目的组件
 @MapperScan("com.std.cuit.service.mapper") // 添加这行，扫描Mapper接口
 public class AuthApplication {

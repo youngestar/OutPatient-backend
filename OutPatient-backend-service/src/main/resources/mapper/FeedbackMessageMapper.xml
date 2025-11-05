@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.std.cuit.service.mapper.FeedbackMessageMapper">
+    <resultMap id="BaseResultMap" type="com.std.cuit.model.entity.FeedbackMessage">
+        <id column="message_id" jdbcType="BIGINT" property="messageId"/>
+        <result column="diag_id" jdbcType="BIGINT" property="diagId"/>
+        <result column="sender_type" jdbcType="INTEGER" property="senderType"/>
+        <result column="sender_id" jdbcType="BIGINT" property="senderId"/>
+        <result column="content" jdbcType="VARCHAR" property="content"/>
+        <result column="read_status" jdbcType="INTEGER" property="readStatus"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        message_id, diag_id, sender_type, sender_id, content, read_status, create_time
+    </sql>
+</mapper>

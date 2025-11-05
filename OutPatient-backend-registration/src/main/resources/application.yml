@@ -11,6 +11,25 @@ spring:
   session:
     timeout: 2592000
 
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    # 可选配置
+    template:
+      retry:
+        enabled: true
+        initial-interval: 1000ms
+        max-attempts: 3
+    listener:
+      simple:
+        retry:
+          enabled: true
+          initial-interval: 1000ms
+          max-attempts: 3
+
   # 数据库相关配置
   datasource:
     url: jdbc:mysql://localhost:3306/hospital_management_system
@@ -65,6 +84,13 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
 
+# MinIO 配置
+minio:
+  endpoint: http://localhost:9000  # MinIO 服务器地址
+  access-key: minioadmin           # 访问密钥
+  secret-key: minioadmin           # 秘密密钥
+  bucket-name: user-avatar         # 存储桶名称
+
 # Sa-Token配置（Gateway专用）
 sa-token:
   # taken 名称
@@ -93,3 +119,83 @@ sa-token:
   is-read-header: true
   is-read-cookie: false
   dynamic-active-timeout: true
+
+# Registration模块全局配置
+registration:
+  global:
+    module-name: "registration-service"
+    version: "1.0.0"
+    enabled: true
+    ai:
+      api-url: "https://api.deepseek.com"
+      api-key: "sk-11c289f3111c47aaa1a8e7665729934a"
+      timeout: 30s
+      max-tokens: 1000
+      session-timeout: 6h
+    appointment:
+      max-appointments-per-day: 5
+      cancel-before: 24h
+      reminder-before: 2h
+      lock-timeout: 5m
+    sse:
+      timeout: 5m
+      reconnect-interval: 5s
+      heartbeat-interval: 30s
+    cache:
+      department-cache: 30m
+      clinic-cache: 30m
+      schedule-cache: 10m
+      doctor-cache: 30m
+    security:
+      allowed-roles: ["admin", "patient", "doctor"]
+      enable-method-security: true
+      enable-pre-post-annotations: true
+
+# 异步任务配置
+  task:
+    execution:
+      pool:
+        core-size: 10
+        max-size: 20
+        queue-capacity: 200
+      thread-name-prefix: "registration-task-"
+    scheduling:
+      thread-name-prefix: "registration-scheduler-"
+
+# 健康检查端点
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+  health:
+    redis:
+      enabled: true
+    db:
+      enabled: true
+
+ai-service:
+  api-url: https://api.deepseek.com
+  api-key: sk-11c289f3111c47aaa1a8e7665729934a
+
+# 日志配置
+logging:
+  level:
+    com.std.cuit.registration: INFO
+    com.std.cuit.registration.service: DEBUG
+    org.springframework.web: WARN
+    org.springframework.data.redis: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
+  file:
+    name: logs/registration-service.log
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      max-history: 30
+      total-size-cap: 1GB

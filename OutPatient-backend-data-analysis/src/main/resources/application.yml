@@ -11,6 +11,25 @@ spring:
   session:
     timeout: 2592000
 
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    # 可选配置
+    template:
+      retry:
+        enabled: true
+        initial-interval: 1000ms
+        max-attempts: 3
+    listener:
+      simple:
+        retry:
+          enabled: true
+          initial-interval: 1000ms
+          max-attempts: 3
+
   # 数据库相关配置
   datasource:
     url: jdbc:mysql://localhost:3306/hospital_management_system
