@@ -6,7 +6,7 @@ import java.security.Principal;
 
 /**
  * SaToken的Principal实现，用于WebSocket用户身份识别
- * @author hua
+ * @author withlia
  */
 @Getter
 public class StpPrincipal implements Principal {

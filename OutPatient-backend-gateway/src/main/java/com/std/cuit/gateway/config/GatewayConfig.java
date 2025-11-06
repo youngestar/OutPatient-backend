@@ -22,7 +22,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Gateway全局配置
+ * author: withlia
+ * date: 2025/10/27
+ * description: 网关配置
  */
 @Configuration
 public class GatewayConfig {

@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * @author hua
+ * @author withlia
  * &#064;description  登录鉴权、用户信息相关接口
- * &#064;create  2025-03-31 21:30
+ * &#064;create  2025-10-22
  */
 
 @Slf4j

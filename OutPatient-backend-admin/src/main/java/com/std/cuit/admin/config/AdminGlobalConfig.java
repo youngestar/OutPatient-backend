@@ -6,6 +6,9 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * Admin模块全局配置
+ * author: withlia
+ * date: 2025-10-27
+ * description: Admin模块全局配置
  */
 @Data
 @Configuration

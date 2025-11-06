@@ -13,7 +13,9 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Sa-Token 权限认证配置类（Gateway WebFlux版本）
+ * author: withlia
+ * date: 2025/10/27
+ * description:  Sa-Token 权限认证配置类 （Gateway WebFlux版本）
  */
 @Slf4j
 @Configuration

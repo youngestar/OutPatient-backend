@@ -16,7 +16,7 @@ import org.springframework.util.StringUtils;
 /**
  * SaToken WebSocket通道拦截器
  * 用于WebSocket连接时的用户认证
- * @author hua
+ * @author withlia
  */
 @Slf4j
 @Component

@@ -8,7 +8,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * SSE事件配置 - 用于AI问诊实时通信
+ * author: withlia
+ * date: 2025/11/05
+ * description:  SSE事件配置 - 用于AI问诊实时通信
  */
 @Configuration
 public class SseEventConfig {

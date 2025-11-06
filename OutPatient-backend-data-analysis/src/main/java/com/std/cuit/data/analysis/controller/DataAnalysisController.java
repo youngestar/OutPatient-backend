@@ -24,6 +24,9 @@ import java.util.Map;
 
 /**
  * 数据分析控制器
+ *
+ * @author withlia
+ * date 2025/11/03
  */
 @SaCheckRole("doctor")
 @Slf4j

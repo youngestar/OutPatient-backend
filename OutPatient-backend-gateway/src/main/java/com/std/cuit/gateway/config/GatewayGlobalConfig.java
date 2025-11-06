@@ -8,7 +8,9 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Gateway模块全局配置
+ * author: withlia
+ * date: 2025/10/27
+ * description:  Gateway全局配置
  */
 @Data
 @Configuration

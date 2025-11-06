@@ -21,6 +21,11 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * 预约挂号控制器
+ * @author: withlia
+ * @date: 2025/11/03
+ */
 @Slf4j
 @RestController
 @RequestMapping("/appointment")

@@ -23,7 +23,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
-
+/**
+ * 反馈消息控制器
+ * author: withlia
+ * date: 2025/11/03
+ */
 @RestController
 @RequestMapping("/medical")
 @Slf4j

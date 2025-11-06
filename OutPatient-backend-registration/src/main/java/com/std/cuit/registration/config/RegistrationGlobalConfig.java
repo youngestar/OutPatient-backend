@@ -9,7 +9,9 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Registration模块全局配置
+ * author: withlia
+ * date: 2025/11/05
+ * description: 全局配置
  */
 @Data
 @Configuration

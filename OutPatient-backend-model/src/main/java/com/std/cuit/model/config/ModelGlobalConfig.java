@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * Model模块全局配置
+ * @author: withlia
+ * @date: 2025/10/27
  */
 @Data
 @Configuration

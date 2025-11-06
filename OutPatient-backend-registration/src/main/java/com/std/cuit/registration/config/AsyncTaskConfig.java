@@ -9,7 +9,9 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
- * 异步任务配置 - 用于AI问诊、邮件发送等异步操作
+ * author: withlia
+ * date: 2025/11/05
+ * description:  异步任务配置 用于ai问诊模块
  */
 @Configuration
 @EnableAsync

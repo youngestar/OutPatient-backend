@@ -13,7 +13,9 @@ import java.time.DayOfWeek;
 import java.time.temporal.TemporalAdjusters;
 
 /**
- * 排班任务配置
+ * author: withlia
+ * date: 2025/10/27
+ * description:  排班任务配置
  */
 @Slf4j
 @Configuration

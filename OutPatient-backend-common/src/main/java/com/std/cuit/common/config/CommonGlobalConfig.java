@@ -5,7 +5,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Common模块全局配置
+ * author: withlia
+ * date: 2025/10/27
+ * description: 通用模块全局配置
  */
 @Data
 @Configuration

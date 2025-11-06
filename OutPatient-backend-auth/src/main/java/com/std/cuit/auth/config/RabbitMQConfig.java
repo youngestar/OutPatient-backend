@@ -9,6 +9,11 @@ import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * author: withlia
+ * date: 2025/11/03
+ * description:  RabbitMQ 配置
+ */
 @Configuration
 public class RabbitMQConfig {
 

@@ -5,7 +5,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 /**
- * 排班规则配置
+ * author: withlia
+ * date: 2025/10/27
+ * description:  排班规则配置
  */
 @Data
 @Component

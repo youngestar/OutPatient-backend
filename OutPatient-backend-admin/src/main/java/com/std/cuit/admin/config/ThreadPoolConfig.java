@@ -9,7 +9,9 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
- * 线程池配置
+ * author: withlia
+ * date: 2025/11/03
+ * description:  线程池配置
  */
 @Configuration
 @EnableAsync

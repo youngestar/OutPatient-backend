@@ -25,6 +25,12 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * 挂号相关接口
+ *
+ * @author withlia
+ * @date: 2025/11/03
+ */
 @Slf4j
 @RestController
 @RequestMapping("/appointment")

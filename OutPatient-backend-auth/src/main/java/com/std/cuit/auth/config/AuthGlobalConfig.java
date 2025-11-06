@@ -5,7 +5,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Auth模块全局配置
+ * author: withlia
+ * date: 2025/11/03
+ * description:  认证全局配置
  */
 @Data
 @Configuration
