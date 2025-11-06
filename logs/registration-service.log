@@ -582,3 +582,41 @@ Consider defining a bean of type 'org.springframework.data.redis.connection.Redi
 2025-11-05 21:36:27.216 [RMI TCP Connection(4)-192.168.186.1] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
 2025-11-05 21:36:27.397 [RMI TCP Connection(4)-192.168.186.1] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7509b11c
 2025-11-05 21:36:27.399 [RMI TCP Connection(4)-192.168.186.1] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-11-05 21:47:15.801 [Thread-6] WARN  com.alibaba.nacos.common.notify.NotifyCenter - [NotifyCenter] Start destroying Publisher
+2025-11-05 21:47:15.802 [Thread-6] WARN  com.alibaba.nacos.common.notify.NotifyCenter - [NotifyCenter] Destruction of the end
+2025-11-05 21:47:15.802 [Thread-8] WARN  c.alibaba.nacos.common.http.HttpClientBeanHolder - [HttpClientBeanHolder] Start destroying common HttpClient
+2025-11-05 21:47:15.803 [Thread-8] WARN  c.alibaba.nacos.common.http.HttpClientBeanHolder - [HttpClientBeanHolder] Destruction of the end
+2025-11-05 21:47:15.807 [SpringApplicationShutdownHook] INFO  o.s.m.simp.broker.SimpleBrokerMessageHandler - Stopping...
+2025-11-05 21:47:15.808 [SpringApplicationShutdownHook] INFO  o.s.m.simp.broker.SimpleBrokerMessageHandler - BrokerAvailabilityEvent[available=false, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@3be94b12]]
+2025-11-05 21:47:15.808 [SpringApplicationShutdownHook] INFO  o.s.m.simp.broker.SimpleBrokerMessageHandler - Stopped.
+2025-11-05 21:47:15.990 [SpringApplicationShutdownHook] INFO  c.a.cloud.nacos.registry.NacosServiceRegistry - De-registering from Nacos Server now...
+2025-11-05 21:47:15.990 [SpringApplicationShutdownHook] INFO  com.alibaba.nacos.client.naming - [DEREGISTER-SERVICE] public deregistering service Outpatient-backend-registration with instance: Instance{instanceId='null', ip='192.168.126.218', port=8206, weight=1.0, healthy=true, enabled=true, ephemeral=true, clusterName='DEFAULT', serviceName='null', metadata={}}
+2025-11-05 21:47:16.000 [SpringApplicationShutdownHook] INFO  c.a.cloud.nacos.registry.NacosServiceRegistry - De-registration finished.
+2025-11-05 21:47:16.001 [SpringApplicationShutdownHook] INFO  com.alibaba.nacos.client.naming - com.alibaba.nacos.client.naming.cache.ServiceInfoHolder do shutdown begin
+2025-11-05 21:47:16.002 [SpringApplicationShutdownHook] INFO  com.alibaba.nacos.client.naming - com.alibaba.nacos.client.naming.backups.FailoverReactor do shutdown begin
+2025-11-05 21:47:16.002 [SpringApplicationShutdownHook] INFO  com.alibaba.nacos.client.naming - com.alibaba.nacos.client.naming.backups.FailoverReactor do shutdown stop
+2025-11-05 21:47:16.002 [SpringApplicationShutdownHook] INFO  com.alibaba.nacos.client.naming - com.alibaba.nacos.client.naming.cache.ServiceInfoHolder do shutdown stop
+2025-11-05 21:47:16.003 [SpringApplicationShutdownHook] INFO  com.alibaba.nacos.client.naming - com.alibaba.nacos.client.naming.remote.NamingClientProxyDelegate do shutdown begin
+2025-11-05 21:47:16.003 [SpringApplicationShutdownHook] INFO  com.alibaba.nacos.client.naming - com.alibaba.nacos.client.naming.core.ServiceInfoUpdateService do shutdown begin
+2025-11-05 21:47:16.003 [SpringApplicationShutdownHook] INFO  com.alibaba.nacos.client.naming - com.alibaba.nacos.client.naming.core.ServiceInfoUpdateService do shutdown stop
+2025-11-05 21:47:16.003 [SpringApplicationShutdownHook] INFO  com.alibaba.nacos.client.naming - com.alibaba.nacos.client.naming.core.ServerListManager do shutdown begin
+2025-11-05 21:47:16.003 [SpringApplicationShutdownHook] WARN  com.alibaba.nacos.client.naming - [NamingHttpClientManager] Start destroying NacosRestTemplate
+2025-11-05 21:47:16.003 [SpringApplicationShutdownHook] WARN  com.alibaba.nacos.client.naming - [NamingHttpClientManager] Destruction of the end
+2025-11-05 21:47:16.003 [SpringApplicationShutdownHook] INFO  com.alibaba.nacos.client.naming - com.alibaba.nacos.client.naming.core.ServerListManager do shutdown stop
+2025-11-05 21:47:16.003 [SpringApplicationShutdownHook] INFO  com.alibaba.nacos.client.naming - com.alibaba.nacos.client.naming.remote.http.NamingHttpClientProxy do shutdown begin
+2025-11-05 21:47:16.003 [SpringApplicationShutdownHook] WARN  com.alibaba.nacos.client.naming - [NamingHttpClientManager] Start destroying NacosRestTemplate
+2025-11-05 21:47:16.004 [SpringApplicationShutdownHook] WARN  com.alibaba.nacos.client.naming - [NamingHttpClientManager] Destruction of the end
+2025-11-05 21:47:16.004 [SpringApplicationShutdownHook] INFO  com.alibaba.nacos.client.naming - com.alibaba.nacos.client.naming.remote.http.NamingHttpClientProxy do shutdown stop
+2025-11-05 21:47:16.004 [SpringApplicationShutdownHook] INFO  com.alibaba.nacos.client.naming - Shutdown naming grpc client proxy for  uuid->04746972-9879-4bea-a871-2d535ec06253
+2025-11-05 21:47:16.004 [SpringApplicationShutdownHook] INFO  com.alibaba.nacos.client.naming - Shutdown grpc redo service executor java.util.concurrent.ScheduledThreadPoolExecutor@4bfdc110[Running, pool size = 1, active threads = 0, queued tasks = 1, completed tasks = 216]
+2025-11-05 21:47:16.004 [SpringApplicationShutdownHook] INFO  com.alibaba.nacos.common.remote.client - Shutdown rpc client, set status to shutdown
+2025-11-05 21:47:16.004 [SpringApplicationShutdownHook] INFO  com.alibaba.nacos.common.remote.client - Shutdown client event executor java.util.concurrent.ScheduledThreadPoolExecutor@1b099b40[Running, pool size = 2, active threads = 2, queued tasks = 0, completed tasks = 0]
+2025-11-05 21:47:16.004 [SpringApplicationShutdownHook] INFO  com.alibaba.nacos.common.remote.client - Close current connection 1762349786435_127.0.0.1_63913
+2025-11-05 21:47:16.006 [nacos-grpc-client-executor-127.0.0.1-140] INFO  c.a.nacos.common.remote.client.grpc.GrpcClient - [1762349786435_127.0.0.1_63913]Ignore complete event,isRunning:false,isAbandon=false
+2025-11-05 21:47:16.009 [SpringApplicationShutdownHook] INFO  c.a.nacos.common.remote.client.grpc.GrpcClient - Shutdown grpc executor java.util.concurrent.ThreadPoolExecutor@6e3a85ae[Running, pool size = 5, active threads = 0, queued tasks = 0, completed tasks = 141]
+2025-11-05 21:47:16.010 [SpringApplicationShutdownHook] INFO  com.alibaba.nacos.client.naming - shutdown and remove naming rpc client  for uuid ->04746972-9879-4bea-a871-2d535ec06253
+2025-11-05 21:47:16.010 [SpringApplicationShutdownHook] INFO  c.a.n.client.auth.ram.identify.CredentialWatcher - [null] CredentialWatcher is stopped
+2025-11-05 21:47:16.010 [SpringApplicationShutdownHook] INFO  c.a.n.client.auth.ram.identify.CredentialService - [null] CredentialService is freed
+2025-11-05 21:47:16.010 [SpringApplicationShutdownHook] INFO  com.alibaba.nacos.client.naming - com.alibaba.nacos.client.naming.remote.NamingClientProxyDelegate do shutdown stop
+2025-11-05 21:47:16.032 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-11-05 21:47:16.037 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.

@@ -1,5 +1,5 @@
-# 多阶段构建
-FROM maven:3.9.6-eclipse-temurin-17 AS builder
+# 多阶段构建 - 使用更稳定的镜像标签
+FROM maven:3.9.6-amazoncorretto-17 AS builder
 
 WORKDIR /app
 COPY . .
@@ -26,13 +26,14 @@ RUN mvn clean install -DskipTests && \
     mvn clean package -pl OutPatient-backend-auth -DskipTests
 
 # 运行时镜像
-FROM eclipse-temurin:17-jre
+FROM amazoncorretto:17-alpine
 
 # 设置时区
-RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+RUN apk add --no-cache tzdata && \
+    ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
 # 创建应用目录和用户
-RUN groupadd -r appuser && useradd -r -g appuser appuser
+RUN addgroup -S appuser && adduser -S appuser -G appuser
 
 # 创建 Sentinel 日志目录并设置权限
 RUN mkdir -p /home/appuser/logs/csp && \
@@ -44,7 +45,9 @@ USER appuser
 WORKDIR /app
 # 从构建阶段复制jar包
 COPY --from=builder /app/OutPatient-backend-auth/target/OutPatient-backend-auth-1.0-SNAPSHOT.jar app.jar
+
 # 暴露端口
 EXPOSE 8203
+
 # 启动命令
 ENTRYPOINT ["java", "-jar", "app.jar"]

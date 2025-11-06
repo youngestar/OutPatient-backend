@@ -10,16 +10,16 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RedissonConfig {
 
-    @Value("${spring.data.redis.host}")
+    @Value("${spring.data.redis.host:redis}")  // 默认使用redis服务名
     private String redisHost;
 
-    @Value("${spring.data.redis.port}")
+    @Value("${spring.data.redis.port:6379}")
     private String redisPort;
 
-    @Value("${spring.data.redis.password}")
+    @Value("${spring.data.redis.password:258013}")
     private String redisPassword;
 
-    @Value("${spring.data.redis.database}")
+    @Value("${spring.data.redis.database:0}")
     private int redisDatabase;
 
     @Bean
@@ -30,10 +30,12 @@ public class RedissonConfig {
         config.useSingleServer()
                 .setAddress("redis://" + redisHost + ":" + redisPort)
                 .setDatabase(redisDatabase)
-                .setPassword(redisPassword)
+                .setPassword(redisPassword.isEmpty() ? null : redisPassword)
                 .setConnectionPoolSize(10)
                 .setConnectionMinimumIdleSize(2)
-                .setTimeout(5000);
+                .setTimeout(5000)
+                .setRetryAttempts(3)
+                .setRetryInterval(1500);
 
         return Redisson.create(config);
     }

@@ -64,9 +64,6 @@ services:
       - "8200:8200"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_CLOUD_NACOS_DISCOVERY_SERVER-ADDR=nacos:8848
-      - SPRING_REDIS_HOST=redis
-      - SPRING_REDIS_PASSWORD=258013
     depends_on:
       - nacos
       - redis
@@ -83,13 +80,6 @@ services:
       - "8203:8203"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/hospital_management_system?useSSL=false&serverTimezone=Asia/Shanghai
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=258013
-      - SPRING_REDIS_HOST=redis
-      - SPRING_REDIS_PASSWORD=258013
-      - SPRING_CLOUD_NACOS_DISCOVERY_SERVER-ADDR=nacos:8848
-      - MINIO_ENDPOINT=http://minio:9000
     depends_on:
       - mysql
       - redis
@@ -110,10 +100,68 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/hospital_management_system?useSSL=false&serverTimezone=Asia/Shanghai
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=258013
-      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_HOST=redis  # 重要：使用redis服务名而不是localhost
       - SPRING_REDIS_PASSWORD=258013
       - SPRING_CLOUD_NACOS_DISCOVERY_SERVER-ADDR=nacos:8848
       - MINIO_ENDPOINT=http://minio:9000
+    depends_on:
+      - mysql
+      - redis
+      - nacos
+    networks:
+      - hospital-network
+
+
+  # 数据分析服务
+  data-analysis:
+    build:
+      context: .
+      dockerfile: OutPatient-backend-data-analysis/Dockerfile
+    container_name: hospital-data-analysis
+    ports:
+      - "8204:8204"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    volumes:
+      - data_analysis_data:/home/appuser/data
+    depends_on:
+      - mysql
+      - redis
+      - nacos
+    networks:
+      - hospital-network
+
+  # 医疗服务
+  medical:
+    build:
+      context: .
+      dockerfile: OutPatient-backend-medical/Dockerfile
+    container_name: hospital-medical
+    ports:
+      - "8205:8205"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    volumes:
+      - medical_data:/home/appuser/data
+    depends_on:
+      - mysql
+      - redis
+      - nacos
+    networks:
+      - hospital-network
+
+  # 挂号服务
+  registration:
+    build:
+      context: .
+      dockerfile: OutPatient-backend-registration/Dockerfile
+    container_name: hospital-registration
+    ports:
+      - "8206:8206"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    volumes:
+      - registration_logs:/home/appuser/logs
     depends_on:
       - mysql
       - redis
@@ -125,6 +173,9 @@ volumes:
   mysql_data:
   redis_data:
   minio_data:
+  data_analysis_data:
+  medical_data:
+  registration_logs:
 
 networks:
   hospital-network:

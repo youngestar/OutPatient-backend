@@ -8,8 +8,8 @@ docker-compose down
 echo "在宿主机上构建所有Maven模块..."
 mvn clean install -DskipTests
 
-echo "构建Docker镜像..."
-docker-compose build
+echo "构建所有微服务镜像..."
+docker-compose build gateway auth admin data-analysis medical registration
 
 echo "启动所有服务..."
 docker-compose up -d
