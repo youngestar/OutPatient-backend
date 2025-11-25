@@ -42,14 +42,16 @@ USER appuser
 
 WORKDIR /app
 # 从构建阶段复制jar包
+
 COPY --from=builder /app/OutPatient-backend-admin/target/OutPatient-backend-admin-1.0-SNAPSHOT.jar app.jar
 
-# 复制等待脚本
+# 复制等待脚本并修复行结束符(BOM/CRLF)以避免容器内解析错误
 COPY --chown=appuser:appuser wait-for-services.sh /app/wait-for-services.sh
+RUN sed -i 's/\r$//' /app/wait-for-services.sh || true
 RUN chmod +x /app/wait-for-services.sh
 
 # 暴露端口
 EXPOSE 8201
 
 # 启动命令 - 先等待依赖服务，再启动应用
-CMD ["/app/wait-for-services.sh", "java", "-jar", "app.jar"]
+CMD ["sh", "/app/wait-for-services.sh", "java", "-jar", "app.jar"]
