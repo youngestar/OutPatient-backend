@@ -24,11 +24,11 @@ spring:
   mail:
     host: smtp.qq.com
     default-encoding: UTF-8
-    username: 1286958193@qq.com
-    password: xvdzhnhhwvurhfbf  # 确保这是QQ邮箱的授权码而不是登录密码
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:} # 使用环境变量提供 QQ 邮箱授权码
     port: 465
-    protocol: smtps  # 改为smtps协议
-    test-connection: false  # 禁用启动时测试连接
+    protocol: smtps # 改为smtps协议
+    test-connection: false # 禁用启动时测试连接
     properties:
       mail:
         smtp:
@@ -67,12 +67,12 @@ spring:
 
 # MinIO 配置
 minio:
-  endpoint: http://localhost:9000  # MinIO 服务器地址
-  access-key: minioadmin           # 访问密钥
-  secret-key: minioadmin           # 秘密密钥
-  bucket-name: user-avatar         # 存储桶名称
+  endpoint: http://localhost:9000 # MinIO 服务器地址
+  access-key: minioadmin # 访问密钥
+  secret-key: minioadmin # 秘密密钥
+  bucket-name: user-avatar # 存储桶名称
 
-# RabbitMQ 配置
+  # RabbitMQ 配置
   rabbitmq:
     host: localhost
     port: 5672
@@ -89,7 +89,6 @@ minio:
         max-attempts: 3
         multiplier: 1.0
         max-interval: 10000ms
-
 
 # Sa-Token配置（Gateway专用）
 sa-token:

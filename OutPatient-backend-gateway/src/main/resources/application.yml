@@ -40,18 +40,33 @@ spring:
           predicates:
             - Path=/api/admin/**
           filters:
-            - StripPrefix=1
             - name: RequestRateLimiter
               args:
                 redis-rate-limiter.replenishRate: 5
                 redis-rate-limiter.burstCapacity: 10
                 key-resolver: "#{@userKeyResolver}"
 
-        # 患者服务路由（预留）
-        - id: patient-service
-          uri: lb://outpatient-backend-patient
+        # 挂号/预约服务路由
+        - id: registration-service
+          uri: lb://outpatient-backend-registration
           predicates:
-            - Path=/api/patient/**
+            - Path=/api/appointment/**
+          filters:
+            - StripPrefix=1
+
+        # 医疗服务路由
+        - id: medical-service
+          uri: lb://outpatient-backend-medical
+          predicates:
+            - Path=/api/medical/**
+          filters:
+            - StripPrefix=1
+
+        # 数据分析服务路由
+        - id: data-analysis-service
+          uri: lb://outpatient-backend-data-analysis
+          predicates:
+            - Path=/api/data-analysis/**
           filters:
             - StripPrefix=1
 
