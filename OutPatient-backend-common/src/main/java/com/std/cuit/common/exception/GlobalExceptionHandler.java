@@ -8,6 +8,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -40,9 +41,10 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<BaseResponse<?>> handleBusinessException(BusinessException e, HttpServletRequest request) {
+        String responseMessage = StringUtils.hasText(e.getDetail()) ? e.getDetail() : e.getMessage();
         log.warn("业务异常: 请求路径: {}, 错误码: {}, 错误信息: {}",
-                request.getRequestURI(), e.getCode(), e.getMessage());
-        BaseResponse<?> body = ResultUtils.error(e.getCode(), e.getMessage());
+            request.getRequestURI(), e.getCode(), responseMessage);
+        BaseResponse<?> body = ResultUtils.error(e.getCode(), responseMessage);
         return ResponseEntity.status(resolveStatus(e.getCode())).body(body);
     }
 
