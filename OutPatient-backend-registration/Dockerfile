@@ -35,19 +35,27 @@ RUN apk add --no-cache tzdata && \
 # 创建应用目录和用户
 RUN addgroup -S appuser && adduser -S appuser -G appuser
 
-# 创建日志目录
+# 创建日志目录并设置权限（保留为 root 以便后续安装文件权限）
 RUN mkdir -p /home/appuser/logs && \
     chown -R appuser:appuser /home/appuser && \
     chmod -R 755 /home/appuser
 
-USER appuser
-
 WORKDIR /app
-# 从构建阶段复制jar包
-COPY --from=builder /app/OutPatient-backend-registration/target/OutPatient-backend-registration-1.0-SNAPSHOT.jar app.jar
+# 从构建阶段复制 jar 包到运行镜像
+COPY --from=builder /app/OutPatient-backend-registration/target/*.jar /app/app.jar
+RUN chown appuser:appuser /app/app.jar || true
+
+# 复制等待脚本（来自模块目录），并确保行尾为 LF、赋可执行权限
+COPY wait-for-services.sh /app/wait-for-services.sh
+RUN sed -i 's/\r$//' /app/wait-for-services.sh || true && \
+    chmod +x /app/wait-for-services.sh && \
+    chown appuser:appuser /app/wait-for-services.sh
+
+# 切换到非特权用户运行
+USER appuser
 
 # 暴露端口
 EXPOSE 8206
 
-# 启动命令
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# 使用等待脚本启动，确保 Redis/MySQL/Nacos 就绪后再启动应用
+CMD ["sh","/app/wait-for-services.sh","java","-jar","app.jar"]

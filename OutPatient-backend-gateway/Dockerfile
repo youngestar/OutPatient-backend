@@ -32,15 +32,24 @@ FROM amazoncorretto:17-alpine
 RUN apk add --no-cache tzdata && \
     ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
-# 创建应用目录和用户
+# 创建应用目录和用户（保留为 root 以便设置文件权限）
 RUN addgroup -S appuser && adduser -S appuser -G appuser
 
 WORKDIR /app
 # 从构建阶段复制jar包
 COPY --from=builder /app/OutPatient-backend-gateway/target/OutPatient-backend-gateway-1.0-SNAPSHOT.jar app.jar
 
+# 复制等待脚本（来自项目根），并确保行尾为 LF、赋可执行权限、调整所有者
+# 复制等待脚本并修复行结束符（来自模块目录）
+COPY wait-for-services.sh /app/wait-for-services.sh
+RUN sed -i 's/\r$//' /app/wait-for-services.sh || true
+RUN chmod +x /app/wait-for-services.sh
+
+# 切换到非特权用户运行
+USER appuser
+
 # 暴露端口
 EXPOSE 8200
 
-# 启动命令
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# 使用等待脚本启动，确保 Redis/MySQL/Nacos 就绪后再启动应用
+CMD ["sh","/app/wait-for-services.sh","java","-jar","app.jar"]

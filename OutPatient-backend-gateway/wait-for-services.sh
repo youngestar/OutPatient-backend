@@ -1,4 +1,3 @@
-
 #!/bin/sh
 
 # 等待Redis服务

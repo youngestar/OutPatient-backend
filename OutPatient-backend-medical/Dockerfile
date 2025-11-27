@@ -39,15 +39,49 @@ RUN addgroup -S appuser && adduser -S appuser -G appuser
 RUN mkdir -p /home/appuser/data/templates && \
     chown -R appuser:appuser /home/appuser && \
     chmod -R 755 /home/appuser
+# 把打包好的 jar 从构建阶段拷贝到运行阶段
+COPY --from=builder /app/OutPatient-backend-medical/target/*.jar /app/app.jar
+RUN chown appuser:appuser /app/app.jar || true
+
+# 在镜像内以 root 生成等待脚本（避免 BOM/CRLF 导致的解析问题）
+RUN cat > /app/wait-for-services.sh <<'EOF'
+#!/bin/sh
+
+# 等待 Redis 服务
+echo "等待Redis服务启动..."
+while ! nc -z redis 6379; do
+    sleep 1
+done
+echo "Redis服务已启动"
+
+# 等待 MySQL 服务
+echo "等待MySQL服务启动..."
+while ! nc -z mysql 3306; do
+    sleep 1
+done
+echo "MySQL服务已启动"
+
+# 等待 Nacos 服务
+echo "等待Nacos服务启动..."
+while ! nc -z nacos 8848; do
+    sleep 1
+done
+echo "Nacos服务已启动"
+
+# 执行应用启动命令
+exec "$@"
+EOF
+
+RUN tr -d '\r' < /app/wait-for-services.sh > /app/wait-for-services.sh.tmp || true && \
+    mv /app/wait-for-services.sh.tmp /app/wait-for-services.sh || true && \
+    chown appuser:appuser /app/wait-for-services.sh && chmod +x /app/wait-for-services.sh || true
 
 USER appuser
 
 WORKDIR /app
-# 从构建阶段复制jar包
-COPY --from=builder /app/OutPatient-backend-medical/target/OutPatient-backend-medical-1.0-SNAPSHOT.jar app.jar
 
 # 暴露端口
 EXPOSE 8205
 
-# 启动命令
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# 启动命令（先等待依赖再启动应用）
+CMD ["sh", "/app/wait-for-services.sh", "java", "-jar", "app.jar"]

@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   # MySQL 数据库
@@ -17,7 +17,7 @@ services:
 
   # Redis 缓存
   redis:
-    image: redis:7.4.7-alpine
+    image: redis:7-alpine
     container_name: hospital-redis
     ports:
       - "6379:6379"
@@ -54,6 +54,19 @@ services:
     networks:
       - hospital-network
 
+  # RabbitMQ 消息队列（部分服务需要连接）
+  rabbitmq:
+    image: rabbitmq:3.11-management
+    container_name: hospital-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - hospital-network
+
   # 网关服务
   gateway:
     build:
@@ -64,9 +77,12 @@ services:
       - "8200:8200"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
     depends_on:
       - nacos
       - redis
+      - rabbitmq
     networks:
       - hospital-network
 
@@ -80,10 +96,16 @@ services:
       - "8203:8203"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/hospital_management_system?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Asia/Shanghai
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=258013
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
     depends_on:
       - mysql
       - redis
       - nacos
+      - rabbitmq
     networks:
       - hospital-network
 
@@ -97,20 +119,22 @@ services:
       - "8201:8201"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/hospital_management_system?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/hospital_management_system?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Asia/Shanghai
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=258013
-      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_HOST=redis # 重要：使用redis服务名而不是localhost
       - SPRING_REDIS_PASSWORD=258013
       - SPRING_CLOUD_NACOS_DISCOVERY_SERVER-ADDR=nacos:8848
       - MINIO_ENDPOINT=http://minio:9000
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
     depends_on:
       - mysql
       - redis
       - nacos
+      - rabbitmq
     networks:
       - hospital-network
-
 
   # 数据分析服务
   data-analysis:
@@ -122,6 +146,9 @@ services:
       - "8204:8204"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/hospital_management_system?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Asia/Shanghai
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=258013
     volumes:
       - data_analysis_data:/home/appuser/data
     depends_on:
@@ -141,6 +168,9 @@ services:
       - "8205:8205"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/hospital_management_system?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Asia/Shanghai
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=258013
     volumes:
       - medical_data:/home/appuser/data
     depends_on:
@@ -160,6 +190,9 @@ services:
       - "8206:8206"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/hospital_management_system?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Asia/Shanghai
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=258013
     volumes:
       - registration_logs:/home/appuser/logs
     depends_on:
@@ -180,3 +213,4 @@ volumes:
 networks:
   hospital-network:
     driver: bridge
+    name: hospital-network
