@@ -94,6 +94,8 @@ services:
     container_name: hospital-auth
     ports:
       - "8203:8203"
+    env_file:
+      - .env
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/hospital_management_system?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Asia/Shanghai
