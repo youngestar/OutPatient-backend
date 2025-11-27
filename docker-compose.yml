@@ -17,7 +17,7 @@ services:
 
   # Redis 缓存
   redis:
-    image: redis:7-alpine
+    image: redis:7.4.7-alpine
     container_name: hospital-redis
     ports:
       - "6379:6379"
@@ -97,10 +97,10 @@ services:
       - "8201:8201"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/hospital_management_system?useSSL=false&serverTimezone=Asia/Shanghai
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/hospital_management_system?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=258013
-      - SPRING_REDIS_HOST=redis  # 重要：使用redis服务名而不是localhost
+      - SPRING_REDIS_HOST=redis
       - SPRING_REDIS_PASSWORD=258013
       - SPRING_CLOUD_NACOS_DISCOVERY_SERVER-ADDR=nacos:8848
       - MINIO_ENDPOINT=http://minio:9000

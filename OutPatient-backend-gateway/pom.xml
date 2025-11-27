@@ -18,23 +18,28 @@
     </properties>
 
     <dependencies>
-        <!-- 自定义模块 -->
-        <dependency>
-            <groupId>com.graduation</groupId>
-            <artifactId>OutPatient-backend-common</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-
         <dependency>
             <groupId>com.graduation</groupId>
             <artifactId>OutPatient-backend-model</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-web</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>com.graduation</groupId>
             <artifactId>OutPatient-backend-service</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-webmvc</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Spring Cloud Gateway -->

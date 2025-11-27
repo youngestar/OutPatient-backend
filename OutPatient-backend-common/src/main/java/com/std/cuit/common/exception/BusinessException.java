@@ -1,7 +1,9 @@
 package com.std.cuit.common.exception;
 
 import com.std.cuit.common.common.ErrorCode;
+import lombok.Getter;
 
+@Getter
 public class BusinessException extends RuntimeException {
     private final int code;
     private final String detail;
@@ -29,5 +31,4 @@ public class BusinessException extends RuntimeException {
         this.code = errorCode.getCode();
         this.detail = null;
     }
-
 }

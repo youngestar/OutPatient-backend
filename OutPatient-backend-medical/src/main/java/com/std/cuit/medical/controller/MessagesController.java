@@ -16,6 +16,8 @@ import com.std.cuit.model.entity.User;
 import com.std.cuit.service.service.DoctorService;
 import com.std.cuit.service.service.MedicalService;
 import com.std.cuit.service.service.PatientService;
+import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +33,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/medical")
 @Slf4j
+@Api(tags = "反馈消息控制器")
 public class MessagesController {
 
     @Resource
@@ -50,6 +53,7 @@ public class MessagesController {
      */
     @PostMapping("/get-feedback-diagnoses")
     @SaCheckRole(value = {"doctor", "patient"},mode = SaMode.OR)
+    @Operation(summary = "获取反馈消息", description = "获取反馈消息")
     public BaseResponse<List<FeedbackMessageRequest>> getFeedbackDiagnoses(@RequestBody FeedbackMessageSendOrGetRequest  request){
         log.info("获取反馈消息请求: {}", request);
 
@@ -82,6 +86,7 @@ public class MessagesController {
      */
     @PostMapping("/send-feedback-message")
     @SaCheckRole(value = {"doctor", "patient"},mode = SaMode.OR)
+    @Operation(summary = "发送反馈消息", description = "发送反馈消息")
     public BaseResponse<Boolean> sendFeedbackMessage(@RequestBody FeedbackMessageSendOrGetRequest request){
         log.info("发送反馈消息请求: {}", request);
 
@@ -122,6 +127,7 @@ public class MessagesController {
      */
     @GetMapping("/feedback/unread/counts")
     @SaCheckRole(value = {"doctor", "patient"},mode = SaMode.OR)
+    @Operation(summary = "获取未读消息数量映射", description = "获取未读消息数量映射")
     public BaseResponse<Map<String, Integer>> getFeedbackUnreadCounts() {
         try {
             // 获取当前用户
@@ -161,6 +167,7 @@ public class MessagesController {
      */
     @SaCheckRole(value = {"doctor", "patient"},mode = SaMode.OR)
     @PostMapping("/diagnoses/feedback/read")
+    @Operation(summary = "标记诊断相关的所有消息为已读", description = "标记诊断相关的所有消息为已读")
     public BaseResponse<Boolean> markDiagnosisFeedbackAsRead(@RequestBody DiagnosisFeedbackReadRequest request) {
         log.info("标记诊断相关的所有消息为已读请求: {}", request);
         try {

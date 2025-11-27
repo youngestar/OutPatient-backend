@@ -12,6 +12,9 @@ import com.std.cuit.model.DTO.AppointmentCreateRequest;
 import com.std.cuit.model.DTO.MessageRecord;
 import com.std.cuit.model.VO.AppointmentVO;
 import com.std.cuit.service.service.AppointmentService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +32,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/appointment")
+@Api(tags = "预约挂号")
 public class AppointmentController {
 
     @Resource
@@ -42,6 +46,7 @@ public class AppointmentController {
      */
     @SaCheckRole("patient")
     @PostMapping("/create")
+    @Operation(summary = "创建预约挂号", description = "创建预约挂号")
     public BaseResponse<AppointmentVO> createAppointment(@RequestBody AppointmentCreateRequest request){
         log.info("接收到创建预约挂号请求, request: {}", request);
         try {
@@ -68,6 +73,7 @@ public class AppointmentController {
      */
     @SaCheckRole("patient")
     @PostMapping("/cancel")
+    @Operation(summary = "取消预约挂号", description = "取消预约挂号")
     public BaseResponse<Boolean> cancelAppointment(@RequestBody AppointmentCancelRequest request){
         log.info("接收到取消预约挂号请求, request: {}", request);
 
@@ -95,6 +101,7 @@ public class AppointmentController {
      */
     @SaCheckRole("patient")
     @GetMapping("/patient")
+    @Operation(summary = "获取患者的预约记录", description = "获取患者的预约记录")
     public BaseResponse<List<AppointmentVO>> getPatientAppointments(
             @RequestParam( value = "patientId", required = true) Long patientId,
             @RequestParam(required = false) Integer status) {
@@ -125,6 +132,7 @@ public class AppointmentController {
      */
     @SaCheckRole("doctor")
     @GetMapping("/application/doctor")
+    @Operation(summary = "获取医生的预约记录", description = "获取医生的预约记录")
     public BaseResponse<List<AppointmentVO>> getDoctorAppointments(
             @Parameter( description = "医生ID") @RequestParam( value = "doctorId") Long doctorId,
             @Parameter(description = "指定日期") @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
@@ -158,6 +166,7 @@ public class AppointmentController {
      */
     @SaCheckRole("doctor")
     @GetMapping("/doctor/appointment/detail")
+    @Operation(summary = "医生查看挂号记录详情", description = "医生查看挂号记录详情")
     public BaseResponse<AppointmentVO> getDoctorAppointmentDetail(
             @Parameter(description = "挂号记录ID") @RequestParam(value = "appointmentId") Long appointmentId,
             @Parameter(description = "医生ID") @RequestParam(value = "doctorId") Long doctorId) {
@@ -183,6 +192,7 @@ public class AppointmentController {
      */
     @SaCheckRole("patient")
     @GetMapping("/ai-consult/exists")
+    @Operation(summary = "检查指定预约是否已经创建了AI问诊记录", description = "检查指定预约是否已经创建了AI问诊记录")
     public BaseResponse<Boolean> checkAiConsultExists(@RequestParam Long appointmentId){
         log.info("接收到检查预约是否已有AI问诊记录请求, appointmentId: {}", appointmentId);
         try {
@@ -202,7 +212,7 @@ public class AppointmentController {
     }
     /**
      * 获取预约相关的AI问诊消息记录
-     *
+     * <p>
      * 获取预约相关的所有消息记录，支持医生、患者和管理员访问
      * 访问权限由service层根据当前登录用户判断
      *
@@ -211,6 +221,7 @@ public class AppointmentController {
      */
     @SaCheckRole(value = {"doctor", "patient", "admin"}, mode = SaMode.OR)
     @GetMapping("/message/history")
+    @Operation(summary = "获取预约相关的AI问诊消息记录", description = "获取预约相关的AI问诊消息记录")
     public BaseResponse<List<MessageRecord>> getAppointmentMessageHistory(@RequestParam(value = "appointmentId") Long appointmentId){
         log.info("接收到获取预约消息记录请求, appointmentId: {}", appointmentId);
         try {

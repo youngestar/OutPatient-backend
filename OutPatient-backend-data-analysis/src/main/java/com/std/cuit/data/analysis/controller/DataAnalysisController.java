@@ -8,6 +8,7 @@ import com.std.cuit.common.common.ResultUtils;
 import com.std.cuit.common.exception.ThrowUtils;
 import com.std.cuit.data.analysis.config.DataAnalysisGlobalConfig;
 import com.std.cuit.service.service.DataAnalysisService;
+import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.annotation.Resource;
@@ -32,6 +33,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/data-analysis")
+@Api(tags = "数据分析接口")
 public class DataAnalysisController {
 
     @Resource
@@ -52,6 +54,7 @@ public class DataAnalysisController {
             @Parameter(description = "时间单位") @RequestParam(required = false, defaultValue = "month") String timeUnit) {
         log.info("获取患者就诊频次统计, doctorId: {}, startDate: {}, endDate: {}, timeUnit: {}",
                 doctorId, startDate, endDate, timeUnit);
+
         Map<String, Integer> data = dataAnalysisService.getPatientVisitFrequency(doctorId, startDate, endDate, timeUnit);
         return ResultUtils.success(data);
     }
@@ -91,6 +94,7 @@ public class DataAnalysisController {
      * @return 患者年龄分布统计
      */
     @GetMapping("/patient-age-distribution")
+    @Operation(summary = "获取患者年龄分布统计", description = "获取患者年龄分布统计")
     public BaseResponse<Map<String, Integer>> getPatientAgeDistribution(
             @Parameter(description = "医生ID") @RequestParam Long doctorId){
         log.info("接收到获取患者年龄分布统计请求, doctorId: {}", doctorId);
@@ -106,6 +110,7 @@ public class DataAnalysisController {
      * @return 患者性别比例统计
      */
     @GetMapping("/patient-gender-ratio")
+    @Operation(summary = "获取患者性别比例统计", description = "获取患者性别比例统计")
     public BaseResponse<Map<String, Integer>> getPatientGenderRatio(
             @Parameter(description = "医生ID") @RequestParam Long doctorId){
         log.info("接收到获取患者性别比例统计请求, doctorId: {}", doctorId);
@@ -120,6 +125,7 @@ public class DataAnalysisController {
      * @return 患者地区分布统计
      */
     @GetMapping("/patient-regional-distribution")
+    @Operation(summary = "获取患者地区分布统计", description = "获取患者地区分布统计")
     public BaseResponse<Map<String, Integer>> getPatientRegionalDistribution(
             @Parameter(description = "医生ID") @RequestParam Long doctorId){
         log.info("接收到获取患者地区分布统计请求, doctorId: {}", doctorId);
@@ -137,6 +143,7 @@ public class DataAnalysisController {
      * @return 医生 workload 统计
      */
     @GetMapping("/doctor-workload")
+    @Operation(summary = "获取医生 workload 统计", description = "获取医生 workload 统计")
     public BaseResponse<Map<String, Integer>> getDoctorWorkloadStatistics(
             @Parameter(description = "医生ID") @RequestParam Long doctorId,
             @Parameter(description = "开始时间") @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
@@ -156,6 +163,7 @@ public class DataAnalysisController {
      * @return 科室 workload 统计
      */
     @GetMapping("/department-workload")
+    @Operation(summary = "获取科室 workload 统计", description = "获取科室 workload 统计")
     public BaseResponse<Map<String, Integer>> getDepartmentWorkloadStatistics(
             @Parameter(description = "医生ID") @RequestParam Long doctorId,
             @Parameter(description = "开始时间") @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,

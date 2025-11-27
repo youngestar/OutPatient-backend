@@ -11,6 +11,8 @@ import com.std.cuit.model.DTO.DiagnosisRequest;
 import com.std.cuit.model.VO.DiagnosisVO;
 import com.std.cuit.model.entity.User;
 import com.std.cuit.service.service.MedicalService;
+import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/medical")
 @Slf4j
+@Api(tags = "诊断控制器")
 public class DiagnosisController {
 
     @Resource
@@ -34,6 +37,7 @@ public class DiagnosisController {
     //获取患者的诊断记录列表
     @GetMapping("/patient/diagnoses-list")
     @SaCheckRole("patient")
+    @Operation(summary = "获取患者的诊断记录列表", description = "获取患者的诊断记录列表")
     public BaseResponse<List<DiagnosisVO>> getPatientDiagnosesList(@Parameter(description = "患者ID") @RequestParam("patientId") Long patientId) {
         //获取当前登录用户
         User user = medicalService.getCurrentUser();
@@ -48,6 +52,7 @@ public class DiagnosisController {
     //获取医生的诊断记录列表
     @GetMapping("/doctor/diagnoses-list")
     @SaCheckRole("doctor")
+    @Operation(summary = "获取医生的诊断记录列表", description = "获取医生的诊断记录列表")
     public BaseResponse<List<DiagnosisVO>> getDoctorDiagnoses(@Parameter( description = "医生ID") @RequestParam("doctorId") Long doctorId){
         log.info("接收到获取医生诊断记录列表请求, doctorId: {}", doctorId);
 
@@ -61,6 +66,7 @@ public class DiagnosisController {
     //获取诊断详情
     @GetMapping("/diagnosis-detail")
     @SaCheckRole(value = {"doctor", "patient"},mode = SaMode.OR)
+    @Operation(summary = "获取诊断详情", description = "获取诊断详情")
     public BaseResponse<DiagnosisVO> getDiagnosisDetail(@Parameter(description = "诊断ID") @RequestParam("diagId") Long diagId){
         log.info("接收到获取诊断详情请求, diagId: {}", diagId);
 
@@ -85,6 +91,7 @@ public class DiagnosisController {
      */
     @SaCheckRole("doctor")
     @PostMapping("/diagnoses")
+    @Operation(summary = "创建诊断记录", description = "创建诊断记录")
     public BaseResponse<DiagnosisVO> createDiagnosis(@RequestBody DiagnosisRequest request) {
         log.info("接收到创建诊断记录请求");
         try {
@@ -114,6 +121,7 @@ public class DiagnosisController {
      */
     @GetMapping("/appointment/diagnosis")
     @SaCheckRole(value = {"doctor", "patient"},mode = SaMode.OR)
+    @Operation(summary = "根据预约ID获取诊断记录", description = "根据预约ID获取诊断记录")
     public BaseResponse<DiagnosisVO> getDiagnosisByAppointmentId(@Parameter(description = "预约ID") @RequestParam("appointmentId") Long appointmentId) {
         log.info("接收到根据预约ID获取诊断记录请求, appointmentId: {}", appointmentId);
         try {

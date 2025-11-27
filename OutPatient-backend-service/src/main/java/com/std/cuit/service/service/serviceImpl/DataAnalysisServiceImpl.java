@@ -12,7 +12,13 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.WeekFields;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -26,22 +32,22 @@ public class DataAnalysisServiceImpl implements DataAnalysisService {
 
     @Resource
     private PatientService patientService;
-    
+
     @Resource
     private DoctorService doctorService;
-    
+
     @Resource
     private DiagnosisService diagnosisService;
-    
+
     @Resource
     private AIService aiService;
-    
+
     @Resource
     private DepartmentService departmentService;
-    
+
     @Resource
     private ClinicService clinicService;
-    
+
     /**
      * 获取指定医生的患者ID列表
      * @param doctorId 医生ID
@@ -51,17 +57,25 @@ public class DataAnalysisServiceImpl implements DataAnalysisService {
         LambdaQueryWrapper<Diagnosis> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Diagnosis::getDoctorId, doctorId);
         List<Diagnosis> diagnosisList = diagnosisService.list(queryWrapper);
-        
+
         return diagnosisList.stream()
                 .map(Diagnosis::getPatientId)
                 .distinct()
                 .collect(Collectors.toList());
     }
-    
+
+    /**
+     * 获取指定医生的患者就诊频次统计
+     * @param doctorId 医生ID
+     * @param startDate 开始时间
+     * @param endDate 结束时间
+     * @param timeUnit 时间单位
+     * @return 患者就诊频次统计结果
+     */
     @Override
     public Map<String, Integer> getPatientVisitFrequency(Long doctorId, LocalDate startDate, LocalDate endDate, String timeUnit) {
         log.info("获取患者就诊频次统计, doctorId: {}, startDate: {}, endDate: {}, timeUnit: {}", doctorId, startDate, endDate, timeUnit);
-        
+
         // 参数校验
         if (startDate == null) {
             startDate = LocalDate.now().minusMonths(6);
@@ -72,57 +86,39 @@ public class DataAnalysisServiceImpl implements DataAnalysisService {
         if (timeUnit == null || timeUnit.isEmpty()) {
             timeUnit = "month";
         }
-        
+
         // 查询时间范围内的指定医生的所有就诊记录
         LambdaQueryWrapper<Diagnosis> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Diagnosis::getDoctorId, doctorId)
-                   .between(Diagnosis::getCreateTime, startDate.atStartOfDay(), endDate.plusDays(1).atStartOfDay());
+                .between(Diagnosis::getCreateTime, startDate.atStartOfDay(), endDate.plusDays(1).atStartOfDay());
         List<Diagnosis> diagnosisList = diagnosisService.list(queryWrapper);
-        
+
         // 使用指定的时间单位对数据进行分组统计
         Map<String, Integer> result;
-        DateTimeFormatter formatter;
-        Function<Diagnosis, String> groupingFunction;
-        
-        switch (timeUnit.toLowerCase()) {
-            case "day":
-                formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                groupingFunction = diag -> diag.getCreateTime().toLocalDate().format(formatter);
-                break;
-            case "week":
-                groupingFunction = diag -> {
-                    LocalDate date = diag.getCreateTime().toLocalDate();
-                    int weekOfYear = date.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear());
-                    return date.getYear() + "-W" + weekOfYear;
-                };
-                break;
-            case "year":
-                formatter = DateTimeFormatter.ofPattern("yyyy");
-                groupingFunction = diag -> diag.getCreateTime().toLocalDate().format(formatter);
-                break;
-            case "month":
-            default:
-                formatter = DateTimeFormatter.ofPattern("yyyy-MM");
-                groupingFunction = diag -> diag.getCreateTime().toLocalDate().format(formatter);
-                break;
-        }
-        
+        Function<Diagnosis, String> groupingFunction = getGroupingFunction(timeUnit);
+
         // 进行分组统计
         result = diagnosisList.stream()
                 .collect(Collectors.groupingBy(groupingFunction, Collectors.summingInt(diag -> 1)));
 
-        ThrowUtils.throwIf(result.isEmpty()
-                , ErrorCode.PARAMS_ERROR, "没有找到任何数据");
+        ThrowUtils.throwIf(result.isEmpty(), ErrorCode.PARAMS_ERROR, "没有找到任何数据");
+
         // 填充空缺的时间点
-        result = fillMissingTimePoints(result, startDate, endDate, timeUnit);
-        
-        return result;
+        return fillMissingTimePoints(result, startDate, endDate, timeUnit);
     }
 
+    /**
+     * 获取AI问诊使用频率统计
+     * @param doctorId 医生ID
+     * @param startDate 开始日期
+     * @param endDate 结束日期
+     * @param timeUnit 时间单位(day、week、month、year)
+     * @return 统计结果
+     */
     @Override
     public Map<String, Integer> getAiConsultFrequency(Long doctorId, LocalDate startDate, LocalDate endDate, String timeUnit) {
         log.info("获取AI问诊使用频率统计, doctorId: {}, startDate: {}, endDate: {}, timeUnit: {}", doctorId, startDate, endDate, timeUnit);
-        
+
         // 参数校验
         if (startDate == null) {
             startDate = LocalDate.now().minusMonths(6);
@@ -133,99 +129,77 @@ public class DataAnalysisServiceImpl implements DataAnalysisService {
         if (timeUnit == null || timeUnit.isEmpty()) {
             timeUnit = "month";
         }
-        
+
         // 获取该医生的患者ID列表
         List<Long> patientIds = getPatientIdsByDoctorId(doctorId);
-        
+
         // 初始化结果为空Map
         Map<String, Integer> result = new TreeMap<>();
-        
+
         // 如果患者列表为空，直接返回初始化的结果
         if (patientIds == null || patientIds.isEmpty()) {
             log.info("医生 {} 没有相关的患者记录", doctorId);
             // 填充空缺的时间点
             return fillMissingTimePoints(result, startDate, endDate, timeUnit);
         }
-        
+
         // 查询时间范围内的所有AI问诊记录
         LambdaQueryWrapper<AiConsultRecord> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.in(AiConsultRecord::getPatientId, patientIds)
-                   .between(AiConsultRecord::getCreateTime, startDate.atStartOfDay(), endDate.plusDays(1).atStartOfDay());
+                .between(AiConsultRecord::getCreateTime, startDate.atStartOfDay(), endDate.plusDays(1).atStartOfDay());
         List<AiConsultRecord> consultRecords = aiService.list(queryWrapper);
-        
+
         // 使用指定的时间单位对数据进行分组统计
-        DateTimeFormatter formatter;
-        Function<AiConsultRecord, String> groupingFunction;
-        
-        switch (timeUnit.toLowerCase()) {
-            case "day":
-                formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                groupingFunction = record -> record.getCreateTime().toLocalDate().format(formatter);
-                break;
-            case "week":
-                groupingFunction = record -> {
-                    LocalDate date = record.getCreateTime().toLocalDate();
-                    int weekOfYear = date.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear());
-                    return date.getYear() + "-W" + weekOfYear;
-                };
-                break;
-            case "year":
-                formatter = DateTimeFormatter.ofPattern("yyyy");
-                groupingFunction = record -> record.getCreateTime().toLocalDate().format(formatter);
-                break;
-            case "month":
-            default:
-                formatter = DateTimeFormatter.ofPattern("yyyy-MM");
-                groupingFunction = record -> record.getCreateTime().toLocalDate().format(formatter);
-                break;
-        }
-        
+        Function<AiConsultRecord, String> groupingFunction = getAiConsultGroupingFunction(timeUnit);
+
         // 进行分组统计
         result = consultRecords.stream()
                 .collect(Collectors.groupingBy(groupingFunction, Collectors.summingInt(record -> 1)));
 
-        ThrowUtils.throwIf(result.isEmpty()
-                , ErrorCode.PARAMS_ERROR, "没有找到任何数据");
+        ThrowUtils.throwIf(result.isEmpty(), ErrorCode.PARAMS_ERROR, "没有找到任何数据");
 
         // 填充空缺的时间点
-        result = fillMissingTimePoints(result, startDate, endDate, timeUnit);
-        
-        return result;
+        return fillMissingTimePoints(result, startDate, endDate, timeUnit);
     }
 
+    /**
+     * 获取患者年龄分布统计
+     * @param doctorId 医生ID
+     * @return 统计结果
+     */
     @Override
     public Map<String, Integer> getPatientAgeDistribution(Long doctorId) {
         log.info("获取患者年龄分布统计, doctorId: {}", doctorId);
-        
+
         // 定义年龄段
         String[] ageRanges = {"0-18", "19-30", "31-45", "46-60", "61-75", "76+"};
         Map<String, Integer> result = new LinkedHashMap<>();
-        
+
         // 初始化结果
         Arrays.stream(ageRanges).forEach(range -> result.put(range, 0));
-        
+
         // 获取该医生的患者ID列表
         List<Long> patientIds = getPatientIdsByDoctorId(doctorId);
-        
+
         // 如果患者列表为空，直接返回初始化的结果
         if (patientIds == null || patientIds.isEmpty()) {
             log.info("医生 {} 没有相关的患者记录", doctorId);
             return result;
         }
-        
+
         // 查询该医生的所有患者信息
         LambdaQueryWrapper<Patient> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.in(Patient::getPatientId, patientIds);
         List<Patient> patients = patientService.list(queryWrapper);
-        
+
         // 根据患者年龄进行分组
         for (Patient patient : patients) {
             if (patient.getAge() == null) {
                 continue;
             }
-            
+
             int age = patient.getAge();
-            
+
             if (age <= 18) {
                 result.put("0-18", result.get("0-18") + 1);
             } else if (age <= 30) {
@@ -240,38 +214,43 @@ public class DataAnalysisServiceImpl implements DataAnalysisService {
                 result.put("76+", result.get("76+") + 1);
             }
         }
-        
+
         return result;
     }
 
+    /**
+     * 获取患者性别比例统计
+     * @param doctorId 医生ID
+     * @return 统计结果
+     */
     @Override
     public Map<String, Integer> getPatientGenderRatio(Long doctorId) {
         log.info("获取患者性别比例统计, doctorId: {}", doctorId);
-        
+
         // 初始化结果
         Map<String, Integer> result = new LinkedHashMap<>();
         result.put("男", 0);
         result.put("女", 0);
         result.put("未知", 0);
-        
+
         // 获取该医生的患者ID列表
         List<Long> patientIds = getPatientIdsByDoctorId(doctorId);
-        
+
         // 如果患者列表为空，直接返回初始化的结果
         if (patientIds == null || patientIds.isEmpty()) {
             log.info("医生 {} 没有相关的患者记录", doctorId);
             return result;
         }
-        
+
         // 查询该医生的所有患者信息
         LambdaQueryWrapper<Patient> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.in(Patient::getPatientId, patientIds);
         List<Patient> patients = patientService.list(queryWrapper);
-        
+
         // 统计性别分布
         for (Patient patient : patients) {
             Integer genderCode = patient.getGender();
-            
+
             if (genderCode == null) {
                 result.put("未知", result.get("未知") + 1);
             } else if (genderCode == 1) {
@@ -282,36 +261,41 @@ public class DataAnalysisServiceImpl implements DataAnalysisService {
                 result.put("未知", result.get("未知") + 1);
             }
         }
-        
+
         return result;
     }
 
+    /**
+     * 获取患者地区分布统计
+     * @param doctorId 医生ID
+     * @return 统计结果
+     */
     @Override
     public Map<String, Integer> getPatientRegionalDistribution(Long doctorId) {
         log.info("获取患者地区分布统计, doctorId: {}", doctorId);
-        
+
         // 使用地区字段进行分组统计
         Map<String, Integer> result = new LinkedHashMap<>();
         result.put("未知", 0);
-        
+
         // 获取该医生的患者ID列表
         List<Long> patientIds = getPatientIdsByDoctorId(doctorId);
-        
+
         // 如果患者列表为空，直接返回初始化的结果
         if (patientIds == null || patientIds.isEmpty()) {
             log.info("医生 {} 没有相关的患者记录", doctorId);
             return result;
         }
-        
+
         // 查询该医生的所有患者信息
         LambdaQueryWrapper<Patient> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.in(Patient::getPatientId, patientIds);
         List<Patient> patients = patientService.list(queryWrapper);
-        
+
         // 按地区分组统计
         for (Patient patient : patients) {
             String region = patient.getRegion();
-            
+
             if (region == null || region.isEmpty()) {
                 // 如果region为空，尝试从address提取
                 if (patient.getAddress() != null && !patient.getAddress().isEmpty()) {
@@ -320,18 +304,25 @@ public class DataAnalysisServiceImpl implements DataAnalysisService {
                     region = "未知";
                 }
             }
-            
+
             // 更新计数
             result.put(region, result.getOrDefault(region, 0) + 1);
         }
-        
+
         return result;
     }
-    
+
+    /**
+     * 获取医生 workload 统计
+     * @param doctorId 医生ID
+     * @param startDate 开始日期
+     * @param endDate 结束日期
+     * @return 统计结果
+     */
     @Override
     public Map<String, Integer> getDoctorWorkloadStatistics(Long doctorId, LocalDate startDate, LocalDate endDate) {
         log.info("获取医生工作量统计, doctorId: {}, startDate: {}, endDate: {}", doctorId, startDate, endDate);
-        
+
         // 参数校验
         if (startDate == null) {
             startDate = LocalDate.now().minusMonths(1);
@@ -339,29 +330,35 @@ public class DataAnalysisServiceImpl implements DataAnalysisService {
         if (endDate == null) {
             endDate = LocalDate.now();
         }
-        
+
         // 查询时间范围内的该医生的所有诊断记录
         LambdaQueryWrapper<Diagnosis> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Diagnosis::getDoctorId, doctorId)
-                   .between(Diagnosis::getCreateTime, startDate.atStartOfDay(), endDate.plusDays(1).atStartOfDay());
+                .between(Diagnosis::getCreateTime, startDate.atStartOfDay(), endDate.plusDays(1).atStartOfDay());
         List<Diagnosis> diagnosisList = diagnosisService.list(queryWrapper);
-        
+
         // 按日期分组统计
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        
-        // 分组统计每天的接诊次数
 
+        // 分组统计每天的接诊次数
         return new TreeMap<>(diagnosisList.stream()
                 .collect(Collectors.groupingBy(
                         diagnosis -> diagnosis.getCreateTime().toLocalDate().format(formatter),
                         Collectors.summingInt(diagnosis -> 1)
                 )));
     }
-    
+
+    /**
+     * 获取科室 workload 统计
+     * @param doctorId 医生ID
+     * @param startDate 开始日期
+     * @param endDate 结束日期
+     * @return 统计结果
+     */
     @Override
     public Map<String, Integer> getDepartmentWorkloadStatistics(Long doctorId, LocalDate startDate, LocalDate endDate) {
         log.info("获取科室工作量统计, doctorId: {}, startDate: {}, endDate: {}", doctorId, startDate, endDate);
-        
+
         // 参数校验
         if (startDate == null) {
             startDate = LocalDate.now().minusMonths(1);
@@ -369,33 +366,33 @@ public class DataAnalysisServiceImpl implements DataAnalysisService {
         if (endDate == null) {
             endDate = LocalDate.now();
         }
-        
+
         // 获取医生所在的科室信息
         Doctor doctor = doctorService.getById(doctorId);
         if (doctor == null || doctor.getClinicId() == null) {
             return new HashMap<>();
         }
-        
+
         Clinic clinic = clinicService.getById(doctor.getClinicId());
         if (clinic == null || clinic.getDeptId() == null) {
             return new HashMap<>();
         }
-        
+
         Department dept = departmentService.getById(clinic.getDeptId());
         if (dept == null) {
             return new HashMap<>();
         }
-        
+
         // 查询时间范围内的该医生的所有诊断记录
         LambdaQueryWrapper<Diagnosis> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Diagnosis::getDoctorId, doctorId)
-                   .between(Diagnosis::getCreateTime, startDate.atStartOfDay(), endDate.plusDays(1).atStartOfDay());
+                .between(Diagnosis::getCreateTime, startDate.atStartOfDay(), endDate.plusDays(1).atStartOfDay());
         List<Diagnosis> diagnosisList = diagnosisService.list(queryWrapper);
-        
+
         // 按日期分组统计
         Map<String, Integer> result = new TreeMap<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        
+
         // 分组统计每天的接诊次数
         diagnosisList.stream()
                 .collect(Collectors.groupingBy(
@@ -403,10 +400,10 @@ public class DataAnalysisServiceImpl implements DataAnalysisService {
                         Collectors.summingInt(diagnosis -> 1)
                 ))
                 .forEach((date, count) -> result.put(date + " (" + dept.getDeptName() + ")", count));
-        
+
         return result;
     }
-    
+
     /**
      * 从地址中提取地区信息（省/市）
      */
@@ -414,27 +411,27 @@ public class DataAnalysisServiceImpl implements DataAnalysisService {
         if (address == null || address.isEmpty()) {
             return "未知";
         }
-        
+
         // 简单地提取省份或城市
         String[] parts = address.split("[省市区县]");
         if (parts.length > 0 && !parts[0].isEmpty()) {
             // 返回第一个匹配的省/市名称
             return parts[0] + (address.contains("省") ? "省" : address.contains("市") ? "市" : "");
         }
-        
+
         // 如果无法提取，返回原始地址的前几个字符
         return address.length() > 5 ? address.substring(0, 5) + "..." : address;
     }
-    
+
     /**
      * 填充缺失的时间点，确保返回的数据连续
      */
     private Map<String, Integer> fillMissingTimePoints(Map<String, Integer> data, LocalDate startDate, LocalDate endDate, String timeUnit) {
         Map<String, Integer> result = new TreeMap<>(); // 使用TreeMap确保按日期排序
-        
+
         LocalDate current = startDate;
         DateTimeFormatter formatter;
-        
+
         switch (timeUnit.toLowerCase()) {
             case "day":
                 formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -470,7 +467,57 @@ public class DataAnalysisServiceImpl implements DataAnalysisService {
                 }
                 break;
         }
-        
+
         return result;
+    }
+
+    /**
+     * 获取诊断记录的分组函数
+     */
+    private Function<Diagnosis, String> getGroupingFunction(String timeUnit) {
+        return switch (timeUnit.toLowerCase()) {
+            case "day" -> {
+                DateTimeFormatter dayFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                yield diag -> diag.getCreateTime().toLocalDate().format(dayFormatter);
+            }
+            case "week" -> diag -> {
+                LocalDate date = diag.getCreateTime().toLocalDate();
+                int weekOfYear = date.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear());
+                return date.getYear() + "-W" + weekOfYear;
+            };
+            case "year" -> {
+                DateTimeFormatter yearFormatter = DateTimeFormatter.ofPattern("yyyy");
+                yield diag -> diag.getCreateTime().toLocalDate().format(yearFormatter);
+            }
+            default -> {
+                DateTimeFormatter monthFormatter = DateTimeFormatter.ofPattern("yyyy-MM");
+                yield diag -> diag.getCreateTime().toLocalDate().format(monthFormatter);
+            }
+        };
+    }
+
+    /**
+     * 获取AI咨询记录的分组函数
+     */
+    private Function<AiConsultRecord, String> getAiConsultGroupingFunction(String timeUnit) {
+        return switch (timeUnit.toLowerCase()) {
+            case "day" -> {
+                DateTimeFormatter dayFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                yield record -> record.getCreateTime().toLocalDate().format(dayFormatter);
+            }
+            case "week" -> record -> {
+                LocalDate date = record.getCreateTime().toLocalDate();
+                int weekOfYear = date.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear());
+                return date.getYear() + "-W" + weekOfYear;
+            };
+            case "year" -> {
+                DateTimeFormatter yearFormatter = DateTimeFormatter.ofPattern("yyyy");
+                yield record -> record.getCreateTime().toLocalDate().format(yearFormatter);
+            }
+            default -> {
+                DateTimeFormatter monthFormatter = DateTimeFormatter.ofPattern("yyyy-MM");
+                yield record -> record.getCreateTime().toLocalDate().format(monthFormatter);
+            }
+        };
     }
 }

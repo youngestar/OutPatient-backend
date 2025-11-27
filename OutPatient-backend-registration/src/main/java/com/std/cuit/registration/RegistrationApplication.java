@@ -7,7 +7,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
 @EnableAsync
-@ComponentScan({"com.std.cuit.registration", "com.std.cuit.service"})
+@ComponentScan({"com.std.cuit.registration", "com.std.cuit.service", "com.std.cuit.common"})
 public class RegistrationApplication {
     public static void main(String[] args) {
         SpringApplication.run(RegistrationApplication.class, args);

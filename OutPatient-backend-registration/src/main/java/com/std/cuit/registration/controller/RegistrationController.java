@@ -15,6 +15,7 @@ import com.std.cuit.model.entity.Patient;
 import com.std.cuit.model.query.ScheduleQuery;
 import com.std.cuit.service.service.DoctorService;
 import com.std.cuit.service.service.RegistrationService;
+import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +35,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/appointment")
+@Api(tags = "挂号接口")
 public class RegistrationController {
 
     @Resource

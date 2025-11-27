@@ -14,7 +14,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EnableDiscoveryClient
 @EnableAsync
 @EnableRabbit
-@ComponentScan({"com.std.cuit.data.analysis", "com.std.cuit.service"})
+@ComponentScan({"com.std.cuit.data.analysis", "com.std.cuit.service", "com.std.cuit.common"})
 @MapperScan("com.std.cuit.service.mapper")
 public class DataAnalysisApplication {
     public static void main(String[] args) {
