@@ -57,7 +57,10 @@ public class SaTokenReactorConfig {
                 .setExcludeList(EXCLUDE_PATHS)
                 // 认证函数
                 .setAuth(obj -> {
-                    ServerWebExchange exchange = (ServerWebExchange) obj;
+                    if (!(obj instanceof ServerWebExchange exchange)) {
+                        log.warn("Sa-Token Reactor 未提供 ServerWebExchange, 跳过本次路径校验");
+                        return;
+                    }
                     String path = exchange.getRequest().getPath().value();
 
                     // 登录认证校验

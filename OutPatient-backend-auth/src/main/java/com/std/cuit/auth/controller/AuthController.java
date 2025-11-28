@@ -11,6 +11,7 @@ import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -100,7 +101,10 @@ public class AuthController {
      */
     @GetMapping("/currentUser")
     @Operation(summary = "获取当前登录用户信息", description = "获取当前登录用户信息")
-    public BaseResponse<UserVO> getCurrentUserInfo() {
+    public BaseResponse<UserVO> getCurrentUserInfo(HttpServletRequest request) {
+        String headerToken = request.getHeader("satoken");
+        log.info("currentUser header satoken: {}", headerToken);
+        log.info("currentUser StpUtil token: {}", cn.dev33.satoken.stp.StpUtil.getTokenValue());
         UserVO userVO = authService.getCurrentUserInfo();
         return ResultUtils.success(userVO);
     }

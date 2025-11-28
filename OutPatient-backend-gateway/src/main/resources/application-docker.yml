@@ -28,4 +28,4 @@ spring:
     redis:
       host: redis
       password: 258013
-      database: 1
+      database: 0
