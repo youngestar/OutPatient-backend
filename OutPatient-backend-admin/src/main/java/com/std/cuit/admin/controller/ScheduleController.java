@@ -3,6 +3,7 @@ package com.std.cuit.admin.controller;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import com.std.cuit.common.common.ResultUtils;
 import com.std.cuit.model.DTO.AutoScheduleRequest;
+import com.std.cuit.model.DTO.DeleteScheduleRequest;
 import com.std.cuit.model.DTO.ScheduleRequest;
 import com.std.cuit.common.common.BaseResponse;
 import com.std.cuit.model.VO.ScheduleDetailVO;
@@ -59,16 +60,15 @@ public class ScheduleController {
     /**
      * 删除排班
      *
-     * @param scheduleRequest 排班信息
+     * @param request 排班信息
      * @return 删除结果
      */
-    @PostMapping("/delete")
+    @PostMapping("/Schedule-delete")
     @Operation(summary = "删除排班", description = "删除排班")
-    public BaseResponse<Boolean> logicDeleteSchedule(@Parameter(description = "排班信息") @RequestBody ScheduleRequest scheduleRequest) {
-        log.info("删除排班请求: {}", scheduleRequest);
-        return scheduleService.logicDeleteSchedule(scheduleRequest);
+    public BaseResponse<Boolean> deleteSchedule(@RequestBody DeleteScheduleRequest request) {
+        Long scheduleId = request.getScheduleId();
+        return scheduleService.logicDeleteSchedule(scheduleId);
     }
-
     /**
      * 获取排班列表
      *

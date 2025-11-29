@@ -5,13 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DoctorRequest {
+public class UpdateDoctorRequest {
 
     /**
      * 医生ID（更新时需要）
@@ -84,5 +85,6 @@ public class DoctorRequest {
     /**
      * 头像URL（仅在更新时可能使用，返回给前端）
      */
+    @Nullable
     private String avatar;
 }

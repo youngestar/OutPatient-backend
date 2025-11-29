@@ -40,12 +40,12 @@ public class GatewayGlobalConfig {
     /**
      * 全局限流QPS
      */
-    private Integer globalRateLimit = 1000;
+    private Integer globalRateLimit = 3000;
 
     /**
      * IP限流QPS
      */
-    private Integer ipRateLimit = 100;
+    private Integer ipRateLimit = 300;
 
     /**
      * 用户限流QPS
@@ -75,7 +75,7 @@ public class GatewayGlobalConfig {
     /**
      * 黑名单IP列表
      */
-    private List<String> blackListIps = Arrays.asList();
+    private List<String> blackListIps = List.of();
 
     /**
      * 是否启用请求日志

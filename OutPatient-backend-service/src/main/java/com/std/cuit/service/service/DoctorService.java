@@ -1,7 +1,8 @@
 package com.std.cuit.service.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.std.cuit.model.DTO.DoctorRequest;
+import com.std.cuit.model.DTO.AddDoctorRequest;
+import com.std.cuit.model.DTO.UpdateDoctorRequest;
 import com.std.cuit.model.VO.DoctorVO;
 import com.std.cuit.common.common.BaseResponse;
 import com.std.cuit.model.entity.Doctor;
@@ -13,23 +14,23 @@ public interface DoctorService extends IService<Doctor> {
 
     /**
      * 添加医生
-     * @param doctorRequest 医生信息
+     * @param addDoctorRequest 医生信息
      * @return 添加成功
      */
-    BaseResponse<Long> addDoctor(DoctorRequest doctorRequest);
+    BaseResponse<Long> addDoctor(AddDoctorRequest addDoctorRequest);
 
     /**
      * 检测医生信息
-     * @param doctorRequest 医生信息
+     * @param addDoctorRequest 医生信息
      */
-    void checkDoctor(DoctorRequest doctorRequest);
+    void checkDoctor(AddDoctorRequest addDoctorRequest);
 
     /**
      * 修改医生信息
-     * @param doctorRequest 医生信息
+     * @param updateDoctorRequest 医生信息
      * @return 修改成功
      */
-    BaseResponse<Boolean> updateDoctor(DoctorRequest doctorRequest);
+    BaseResponse<Boolean> updateDoctor(UpdateDoctorRequest updateDoctorRequest);
 
     /**
      * 删除医生信息

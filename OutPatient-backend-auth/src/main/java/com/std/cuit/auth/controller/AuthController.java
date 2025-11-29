@@ -1,5 +1,6 @@
 package com.std.cuit.auth.controller;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.std.cuit.model.VO.UserVO;
 import com.std.cuit.common.common.BaseResponse;
 import com.std.cuit.common.common.ResultUtils;
@@ -11,6 +12,7 @@ import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -100,7 +102,10 @@ public class AuthController {
      */
     @GetMapping("/currentUser")
     @Operation(summary = "获取当前登录用户信息", description = "获取当前登录用户信息")
-    public BaseResponse<UserVO> getCurrentUserInfo() {
+    public BaseResponse<UserVO> getCurrentUserInfo(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        log.info("接收到获取当前用户请求, Authorization头: {}", authHeader);
+        log.info("当前登录状态: {}, 用户ID: {}", StpUtil.isLogin(), StpUtil.isLogin() ? StpUtil.getLoginId() : "未登录");
         UserVO userVO = authService.getCurrentUserInfo();
         return ResultUtils.success(userVO);
     }

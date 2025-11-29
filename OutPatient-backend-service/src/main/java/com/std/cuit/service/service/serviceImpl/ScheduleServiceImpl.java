@@ -62,6 +62,11 @@ public class ScheduleServiceImpl extends ServiceImpl<ScheduleMapper, Schedule> i
                 , ErrorCode.PARAMS_ERROR, "可挂号人数必须大于0");
     }
 
+    /**
+     * 添加排班
+     * @param scheduleRequest 排班信息
+     * @return 排班ID
+     */
     @Override
     public BaseResponse<Long> addSchedule(ScheduleRequest scheduleRequest) {
         // 参数校验
@@ -94,6 +99,11 @@ public class ScheduleServiceImpl extends ServiceImpl<ScheduleMapper, Schedule> i
         return ResultUtils.success(schedule.getScheduleId());
     }
 
+    /**
+     * 更新排班信息
+     * @param scheduleRequest 排班信息
+     * @return 更新结果
+     */
     @Override
     public BaseResponse<Boolean> updateSchedule(ScheduleRequest scheduleRequest) {
         // 参数校验
@@ -125,36 +135,60 @@ public class ScheduleServiceImpl extends ServiceImpl<ScheduleMapper, Schedule> i
         return ResultUtils.success(true);
     }
 
+    /**
+     * 逻辑删除排班
+     * @param scheduleId 排班ID
+     * @return 删除结果
+     */
     @Override
-    public BaseResponse<Boolean> logicDeleteSchedule(ScheduleRequest scheduleRequest) {
-        checkSchedule(scheduleRequest);
-        ThrowUtils.throwIf(scheduleRequest.getScheduleId() == null
-                , ErrorCode.PARAMS_ERROR, "排班ID不能为空");
+    public BaseResponse<Boolean> logicDeleteSchedule(Long scheduleId) {
+        log.info("开始逻辑删除排班，scheduleId: {}", scheduleId);
 
-        Schedule schedule = scheduleMapper.selectById(scheduleRequest.getScheduleId());
+        ThrowUtils.throwIf(scheduleId == null, ErrorCode.PARAMS_ERROR, "排班ID不能为空");
 
-        ThrowUtils.throwIf(schedule == null
-                , ErrorCode.SCHEDULE_NOT_EXIST, "排班不存在");
-        // 只允许删除未过期且未被预约的排班
-        ThrowUtils.throwIf(schedule.getScheduleDate().isBefore(LocalDate.now())
-                , ErrorCode.SCHEDULE_NOT_EXIST, "该排班已过期，无法删除");
+        // 查询排班信息
+        Schedule schedule = scheduleMapper.selectById(scheduleId);
+        log.info("查询到的排班信息: {}", schedule);
 
-        ThrowUtils.throwIf(schedule.getCurrentPatients() > 0
-                , ErrorCode.OPERATION_ERROR, "该排班已有预约，无法删除");
+        ThrowUtils.throwIf(schedule == null, ErrorCode.SCHEDULE_NOT_EXIST, "排班不存在");
 
-        // 逻辑删除排班，设置状态为0,0表示无效
-        LambdaUpdateWrapper< Schedule> updateWrapper = new LambdaUpdateWrapper<>();
-        updateWrapper.eq(Schedule::getScheduleId, scheduleRequest.getScheduleId())
+        // 检查排班日期
+        log.info("排班日期: {}, 当前日期: {}", schedule.getScheduleDate(), LocalDate.now());
+        ThrowUtils.throwIf(schedule.getScheduleDate().isBefore(LocalDate.now()),
+                ErrorCode.OPERATION_ERROR, "该排班已过期，无法删除");
+
+        // 检查预约人数
+        log.info("当前预约人数: {}, 最大患者数: {}", schedule.getCurrentPatients(), schedule.getMaxPatients());
+        ThrowUtils.throwIf(schedule.getCurrentPatients() > 0,
+                ErrorCode.OPERATION_ERROR, "该排班已有预约，无法删除");
+
+        // 检查排班状态
+        log.info("排班当前状态: {}", schedule.getStatus());
+        if (schedule.getStatus() == 0) {
+            log.info("排班已被删除，无需重复操作");
+            return ResultUtils.success(true);
+        }
+
+        // 执行更新
+        LambdaUpdateWrapper<Schedule> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(Schedule::getScheduleId, scheduleId)
                 .set(Schedule::getStatus, 0);
 
+        log.info("执行更新操作，updateWrapper: {}", updateWrapper.getCustomSqlSegment());
         int result = scheduleMapper.update(null, updateWrapper);
-        ThrowUtils.throwIf(result != 1
-                , ErrorCode.OPERATION_ERROR, "删除排班失败");
+        log.info("更新结果: {}", result);
 
-        log.info("排班逻辑删除成功，排班ID: {}", schedule.getScheduleId());
+        ThrowUtils.throwIf(result != 1, ErrorCode.OPERATION_ERROR, "删除排班失败");
+
+        log.info("排班逻辑删除成功，排班ID: {}", scheduleId);
         return ResultUtils.success(true);
     }
 
+    /**
+     * 获取排班列表
+     * @param scheduleRequest 排班信息
+     * @return 排班列表
+     */
     @Override
     public BaseResponse<List<Schedule>> getScheduleList(ScheduleRequest scheduleRequest) {
         LambdaQueryWrapper<Schedule> queryWrapper = new LambdaQueryWrapper<>();
@@ -177,6 +211,11 @@ public class ScheduleServiceImpl extends ServiceImpl<ScheduleMapper, Schedule> i
         return ResultUtils.success(scheduleList);
     }
 
+    /**
+     * 获取排班详情
+     * @param scheduleId 排班ID
+     * @return 排班详情
+     */
     @Override
     public BaseResponse<Schedule> getScheduleDetail(Long scheduleId) {
 
@@ -191,20 +230,16 @@ public class ScheduleServiceImpl extends ServiceImpl<ScheduleMapper, Schedule> i
         return ResultUtils.success(schedule);
     }
 
-    // 在 ScheduleServiceImpl.java 中添加以下实现
-
+/**
+     * 为指定日期生成默认的排班
+     * @param scheduleDate 排班日期
+     * @return 生成的排班数量
+     */
     @Override
     public int generateSchedulesForDate(LocalDate scheduleDate) {
         log.info("开始为日期 {} 生成排班", scheduleDate);
 
         int generatedCount;
-
-
-            // TODO: 实现具体的排班生成逻辑
-            // 1. 获取所有有效的医生
-            // 2. 获取所有有效的门诊
-            // 3. 根据排班规则为每个医生在合适的门诊生成排班
-            // 4. 设置时间段（上午/下午）和最大患者数
 
             // 示例：模拟生成一些排班
             generatedCount = generateDefaultSchedules(scheduleDate);
@@ -216,6 +251,11 @@ public class ScheduleServiceImpl extends ServiceImpl<ScheduleMapper, Schedule> i
         return generatedCount;
     }
 
+    /**
+     * 检查指定日期的排班是否完整
+     * @param scheduleDate 排班日期
+     * @return 是否完整
+     */
     @Override
     public boolean isScheduleComplete(LocalDate scheduleDate) {
         // 检查排班是否完整（例如：每个门诊都有足够的医生排班）
@@ -233,7 +273,6 @@ public class ScheduleServiceImpl extends ServiceImpl<ScheduleMapper, Schedule> i
 
         return Math.toIntExact(scheduleMapper.selectCount(queryWrapper));
     }
-
     @Override
     public List<Schedule> getSchedulesByDoctorAndDateRange(Long doctorId, LocalDate startDate, LocalDate endDate) {
         if (doctorId == null || startDate == null || endDate == null) {
@@ -251,6 +290,11 @@ public class ScheduleServiceImpl extends ServiceImpl<ScheduleMapper, Schedule> i
         return list(queryWrapper);
     }
 
+    /**
+     * 增加排班已预约人数
+     * @param scheduleId 排班ID
+     * @return 是否成功
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean incrementCurrentPatients(Long scheduleId) {
@@ -275,6 +319,11 @@ public class ScheduleServiceImpl extends ServiceImpl<ScheduleMapper, Schedule> i
         return update(updateWrapper);
     }
 
+    /**
+     * 减少排班已预约人数
+     * @param scheduleId 排班ID
+     * @return 是否成功
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean decrementCurrentPatients(Long scheduleId) {
@@ -299,6 +348,13 @@ public class ScheduleServiceImpl extends ServiceImpl<ScheduleMapper, Schedule> i
         return update(updateWrapper);
     }
 
+    /**
+     * 执行自动排班
+     * @param startDate 排班开始日期
+     * @param endDate 排班结束日期
+     * @param clinicId 门诊ID
+     * @return 是否成功
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean executeAutoSchedule(LocalDate startDate, LocalDate endDate, Long clinicId) {

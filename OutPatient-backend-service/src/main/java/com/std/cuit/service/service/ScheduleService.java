@@ -17,7 +17,7 @@ public interface ScheduleService extends IService<Schedule> {
 
     BaseResponse<Boolean> updateSchedule(ScheduleRequest scheduleRequest);
 
-    BaseResponse<Boolean> logicDeleteSchedule(ScheduleRequest scheduleRequest);
+    BaseResponse<Boolean> logicDeleteSchedule(Long scheduleId);
 
     BaseResponse<List<Schedule>> getScheduleList(ScheduleRequest scheduleRequest);
 

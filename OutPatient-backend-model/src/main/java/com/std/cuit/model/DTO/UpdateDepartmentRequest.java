@@ -6,7 +6,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class DepartmentRequest {
+public class UpdateDepartmentRequest {
     /**
      * 科室ID
      */

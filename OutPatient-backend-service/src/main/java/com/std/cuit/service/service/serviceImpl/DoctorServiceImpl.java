@@ -3,7 +3,8 @@ package com.std.cuit.service.service.serviceImpl;
 import com.alibaba.excel.util.StringUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.std.cuit.model.DTO.DoctorRequest;
+import com.std.cuit.model.DTO.AddDoctorRequest;
+import com.std.cuit.model.DTO.UpdateDoctorRequest;
 import com.std.cuit.model.VO.DoctorVO;
 import com.std.cuit.common.common.BaseResponse;
 import com.std.cuit.common.common.Constants;
@@ -50,17 +51,17 @@ public class DoctorServiceImpl extends ServiceImpl<DoctorMapper, Doctor> impleme
 
     /**
      * 添加医生信息
-     * @param doctorRequest 医生信息
+     * @param addDoctorRequest 医生信息
      * @return 医生ID
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public BaseResponse<Long> addDoctor(DoctorRequest doctorRequest) {
-        log.info("医生信息: {}", doctorRequest);
-        checkDoctor(doctorRequest);
+    public BaseResponse<Long> addDoctor(AddDoctorRequest addDoctorRequest) {
+        log.info("医生信息: {}", addDoctorRequest);
+        checkDoctor(addDoctorRequest);
 
         // 检查门诊是否存在
-        Clinic clinic = clinicService.getById(doctorRequest.getClinicId());
+        Clinic clinic = clinicService.getById(addDoctorRequest.getClinicId());
         ThrowUtils.throwIf(clinic == null
                 , ErrorCode.PARAMS_ERROR, "所属门诊不存在");
 
@@ -70,31 +71,31 @@ public class DoctorServiceImpl extends ServiceImpl<DoctorMapper, Doctor> impleme
                 , ErrorCode.PARAMS_ERROR, "所属科室不存在");
 
         // 检查用户名是否存在
-        User existingUser = userService.getByUsername(doctorRequest.getUsername());
+        User existingUser = userService.getByUsername(addDoctorRequest.getUsername());
         ThrowUtils.throwIf(existingUser != null
                 , ErrorCode.PARAMS_ERROR, "用户名已存在");
 
         //检查邮箱是否存在
-        if (StringUtils.isNotBlank(doctorRequest.getEmail())) {
-            User existingEmail = userService.getByEmail(doctorRequest.getEmail());
+        if (StringUtils.isNotBlank(addDoctorRequest.getEmail())) {
+            User existingEmail = userService.getByEmail(addDoctorRequest.getEmail());
             ThrowUtils.throwIf(existingEmail != null
                     , ErrorCode.PARAMS_ERROR, "邮箱已存在");
         }
 
         //创建用户账号
         User user = new User();
-        user.setUsername(doctorRequest.getUsername())
-                .setPassword(DigestUtils.md5Hex(doctorRequest.getPassword() + Constants.SALT))
-                .setPhone(doctorRequest.getPhone())
-                .setEmail(doctorRequest.getEmail())
+        user.setUsername(addDoctorRequest.getUsername())
+                .setPassword(DigestUtils.md5Hex(addDoctorRequest.getPassword() + Constants.SALT))
+                .setPhone(addDoctorRequest.getPhone())
+                .setEmail(addDoctorRequest.getEmail())
                 .setRole(1)//1 - 医生角色
                 .setAvatar(Constants.MinioConstants.DEFAULT_AVATAR_URL);
 
         userService.save(user);
 
         //处理头像文件上传
-        if (doctorRequest.getAvatarFile() != null && !doctorRequest.getAvatarFile().isEmpty()){
-            MultipartFile avatarFile = doctorRequest.getAvatarFile();
+        if (addDoctorRequest.getAvatarFile() != null && !addDoctorRequest.getAvatarFile().isEmpty()){
+            MultipartFile avatarFile = addDoctorRequest.getAvatarFile();
             String avatarUrl;
             try {
                 avatarUrl = minioUtils.uploadAvatar(
@@ -111,10 +112,10 @@ public class DoctorServiceImpl extends ServiceImpl<DoctorMapper, Doctor> impleme
         //创建医生信息
         Doctor doctor = new Doctor();
         doctor.setUserId(user.getId())
-                .setName(doctorRequest.getName())
-                .setClinicId(doctorRequest.getClinicId())
-                .setTitle(doctorRequest.getTitle())
-                .setIntroduction(doctorRequest.getIntroduction());
+                .setName(addDoctorRequest.getName())
+                .setClinicId(addDoctorRequest.getClinicId())
+                .setTitle(addDoctorRequest.getTitle())
+                .setIntroduction(addDoctorRequest.getIntroduction());
 
         save(doctor);
 
@@ -124,42 +125,42 @@ public class DoctorServiceImpl extends ServiceImpl<DoctorMapper, Doctor> impleme
 
     /**
      * 医生信息检查
-     * @param doctorRequest 医生信息
+     * @param addDoctorRequest 医生信息
      */
     @Override
-    public void checkDoctor(DoctorRequest doctorRequest) {
-        ThrowUtils.throwIf(doctorRequest ==  null
+    public void checkDoctor(AddDoctorRequest addDoctorRequest) {
+        ThrowUtils.throwIf(addDoctorRequest ==  null
                 , ErrorCode.PARAMS_ERROR, "医生信息不能为空");
 
-        ThrowUtils.throwIf(doctorRequest.getUsername() == null
+        ThrowUtils.throwIf(addDoctorRequest.getUsername() == null
                 , ErrorCode.PARAMS_ERROR, "用户名不能为空");
 
-        ThrowUtils.throwIf(doctorRequest.getPassword() == null
+        ThrowUtils.throwIf(addDoctorRequest.getPassword() == null
                 , ErrorCode.PARAMS_ERROR, "密码不能为空");
 
-        ThrowUtils.throwIf(doctorRequest.getName() == null
+        ThrowUtils.throwIf(addDoctorRequest.getName() == null
                 , ErrorCode.PARAMS_ERROR, "医生姓名不能为空");
 
-        ThrowUtils.throwIf(doctorRequest.getClinicId() == null
+        ThrowUtils.throwIf(addDoctorRequest.getClinicId() == null
                 , ErrorCode.PARAMS_ERROR, "所属门诊ID不能为空");
 
     }
 
     /**
      * 更新医生信息
-     * @param doctorRequest 医生信息
+     * @param updateDoctorRequest 医生信息
      * @return 是否更新成功
      */
     @Override
-    public BaseResponse<Boolean> updateDoctor(DoctorRequest doctorRequest) {
-        log.info("更新医生信息: {}", doctorRequest);
-        ThrowUtils.throwIf(doctorRequest == null
+    public BaseResponse<Boolean> updateDoctor(UpdateDoctorRequest updateDoctorRequest) {
+        log.info("更新医生信息: {}", updateDoctorRequest);
+        ThrowUtils.throwIf(updateDoctorRequest == null
                 , ErrorCode.PARAMS_ERROR, "医生信息不能为空");
 
-        ThrowUtils.throwIf(doctorRequest.getDoctorId() == null
+        ThrowUtils.throwIf(updateDoctorRequest.getDoctorId() == null
                 , ErrorCode.PARAMS_ERROR, "医生ID不能为空");
 
-        Doctor doctor = getById(doctorRequest.getDoctorId());
+        Doctor doctor = getById(updateDoctorRequest.getDoctorId());
 
         ThrowUtils.throwIf(doctor == null
                 , ErrorCode.DOCTOR_NOT_EXIST, "医生不存在");
@@ -169,7 +170,7 @@ public class DoctorServiceImpl extends ServiceImpl<DoctorMapper, Doctor> impleme
         ThrowUtils.throwIf(existingUser == null
                 , ErrorCode.DATA_NOT_EXISTS,"用户不存在");
 
-        if (doctorRequest.getClinicId() != null) {
+        if (updateDoctorRequest.getClinicId() != null) {
             //检查门诊是否存在
             Clinic clinic = clinicService.getById(doctor.getClinicId());
             ThrowUtils.throwIf(clinic == null
@@ -187,39 +188,39 @@ public class DoctorServiceImpl extends ServiceImpl<DoctorMapper, Doctor> impleme
         //更新用户账号信息
 
         // 更新用户名
-        if (StringUtils.isNotBlank(doctorRequest.getUsername()) && !doctorRequest.getUsername().equals(existingUser.getUsername())){
+        if (StringUtils.isNotBlank(updateDoctorRequest.getUsername()) && !updateDoctorRequest.getUsername().equals(existingUser.getUsername())){
             //检查用户名是否存在
-            User existingUsername = userService.getByUsername(doctorRequest.getUsername());
+            User existingUsername = userService.getByUsername(updateDoctorRequest.getUsername());
             ThrowUtils.throwIf(existingUsername != null && !existingUsername.getId().equals(existingUser.getId()),
                      ErrorCode.PARAMS_ERROR, "用户名已存在或者与原来的用户名相同");
-            existingUser.setUsername(doctorRequest.getUsername());
+            existingUser.setUsername(updateDoctorRequest.getUsername());
             userInfoChanged = true;
         }
 
         // 更新用户密码
-        if (StringUtils.isNotBlank(doctorRequest.getPassword())){
-            existingUser.setPassword(DigestUtils.md5Hex(doctorRequest.getPassword() + Constants.SALT));
+        if (StringUtils.isNotBlank(updateDoctorRequest.getPassword())){
+            existingUser.setPassword(DigestUtils.md5Hex(updateDoctorRequest.getPassword() + Constants.SALT));
             userInfoChanged = true;
         }
 
         // 更新邮箱
-        if (StringUtils.isNotBlank(doctorRequest.getEmail()) && !doctorRequest.getEmail().equals(existingUser.getEmail())){
-            User existingEmail = userService.getByEmail(doctorRequest.getEmail());
+        if (StringUtils.isNotBlank(updateDoctorRequest.getEmail()) && !updateDoctorRequest.getEmail().equals(existingUser.getEmail())){
+            User existingEmail = userService.getByEmail(updateDoctorRequest.getEmail());
             ThrowUtils.throwIf(existingEmail != null && !existingEmail.getId().equals(existingUser.getId())
                     , ErrorCode.PARAMS_ERROR, "邮箱已存在或者与原来的邮箱相同");
-            existingUser.setEmail(doctorRequest.getEmail());
+            existingUser.setEmail(updateDoctorRequest.getEmail());
             userInfoChanged = true;
         }
 
         // 更新手机号
-        if (StringUtils.isNotBlank(doctorRequest.getPhone()) && !doctorRequest.getPhone().equals(existingUser.getPhone())){
-            existingUser.setPhone(doctorRequest.getPhone());
+        if (StringUtils.isNotBlank(updateDoctorRequest.getPhone()) && !updateDoctorRequest.getPhone().equals(existingUser.getPhone())){
+            existingUser.setPhone(updateDoctorRequest.getPhone());
             userInfoChanged = true;
         }
 
         // 处理头像更新
-        if (doctorRequest.getAvatarFile() != null && !doctorRequest.getAvatarFile().isEmpty()){
-            MultipartFile avatarFile = doctorRequest.getAvatarFile();
+        if (updateDoctorRequest.getAvatarFile() != null && !updateDoctorRequest.getAvatarFile().isEmpty()){
+            MultipartFile avatarFile = updateDoctorRequest.getAvatarFile();
 
             // 获取旧头像URL
             String oldAvatarUrl = existingUser.getAvatar();
@@ -246,29 +247,29 @@ public class DoctorServiceImpl extends ServiceImpl<DoctorMapper, Doctor> impleme
         //更新医生信息
         boolean doctorInfoChanged = false;
         Doctor doctorToUpdate = new Doctor();
-        doctorToUpdate.setDoctorId(doctorRequest.getDoctorId());
+        doctorToUpdate.setDoctorId(updateDoctorRequest.getDoctorId());
 
         // 更新医生姓名
-        if (StringUtils.isNotBlank(doctorRequest.getName()) && !doctorRequest.getName().equals(doctor.getName())){
-            doctorToUpdate.setName(doctorRequest.getName());
+        if (StringUtils.isNotBlank(updateDoctorRequest.getName()) && !updateDoctorRequest.getName().equals(doctor.getName())){
+            doctorToUpdate.setName(updateDoctorRequest.getName());
             doctorInfoChanged = true;
         }
 
         // 更新诊所 ID
-        if (doctorRequest.getClinicId() != null && !doctorRequest.getClinicId().equals(doctor.getClinicId())){
-            doctorToUpdate.setClinicId(doctorRequest.getClinicId());
+        if (updateDoctorRequest.getClinicId() != null && !updateDoctorRequest.getClinicId().equals(doctor.getClinicId())){
+            doctorToUpdate.setClinicId(updateDoctorRequest.getClinicId());
             doctorInfoChanged = true;
         }
 
         // 更新医生标题
-        if (StringUtils.isNotBlank(doctorRequest.getTitle()) && !doctorRequest.getTitle().equals(doctor.getTitle())){
-            doctorToUpdate.setTitle(doctorRequest.getTitle());
+        if (StringUtils.isNotBlank(updateDoctorRequest.getTitle()) && !updateDoctorRequest.getTitle().equals(doctor.getTitle())){
+            doctorToUpdate.setTitle(updateDoctorRequest.getTitle());
             doctorInfoChanged = true;
         }
 
         // 更新医生简介
-        if (StringUtils.isNotBlank(doctorRequest.getIntroduction()) && !doctorRequest.getIntroduction().equals(doctor.getIntroduction())){
-            doctorToUpdate.setIntroduction(doctorRequest.getIntroduction());
+        if (StringUtils.isNotBlank(updateDoctorRequest.getIntroduction()) && !updateDoctorRequest.getIntroduction().equals(doctor.getIntroduction())){
+            doctorToUpdate.setIntroduction(updateDoctorRequest.getIntroduction());
             doctorInfoChanged = true;
         }
 
