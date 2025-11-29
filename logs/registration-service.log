@@ -280,3 +280,69 @@ Caused by: org.springframework.beans.factory.NoSuchBeanDefinitionException: No q
 	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1353)
 	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.resolveFieldValue(AutowiredAnnotationBeanPostProcessor.java:784)
 	... 52 common frames omitted
+2025-11-29 18:18:35.674 [main] INFO  com.std.cuit.registration.RegistrationApplication - Starting RegistrationApplication using Java 17.0.16 with PID 70112 (D:\web作业\OutPatient-backend\OutPatient-backend-registration\target\classes started by 12869 in D:\web作业\OutPatient-backend)
+2025-11-29 18:18:35.681 [main] INFO  com.std.cuit.registration.RegistrationApplication - The following 1 profile is active: "dev"
+2025-11-29 18:18:36.945 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-11-29 18:18:36.948 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-11-29 18:18:36.979 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 16 ms. Found 0 Redis repository interfaces.
+2025-11-29 18:18:37.303 [main] INFO  o.springframework.cloud.context.scope.GenericScope - BeanFactory id=95658d64-d5c9-34e9-a232-873fb5341539
+2025-11-29 18:18:37.845 [main] WARN  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration$DeferringLoadBalancerInterceptorConfig' of type [org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration$DeferringLoadBalancerInterceptorConfig] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [lbRestClientPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2025-11-29 18:18:37.852 [main] WARN  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'deferringLoadBalancerInterceptor' of type [org.springframework.cloud.client.loadbalancer.DeferringLoadBalancerInterceptor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [lbRestClientPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2025-11-29 18:18:37.856 [main] WARN  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerBeanPostProcessorAutoConfiguration' of type [org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerBeanPostProcessorAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [loadBalancerWebClientBuilderBeanPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2025-11-29 18:18:37.859 [main] WARN  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerBeanPostProcessorAutoConfiguration$ReactorDeferringLoadBalancerFilterConfig' of type [org.springframework.cloud.client.loadbalancer.reactive.LoadBalancerBeanPostProcessorAutoConfiguration$ReactorDeferringLoadBalancerFilterConfig] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [loadBalancerWebClientBuilderBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2025-11-29 18:18:37.861 [main] WARN  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'reactorDeferringLoadBalancerExchangeFilterFunction' of type [org.springframework.cloud.client.loadbalancer.reactive.DeferringLoadBalancerExchangeFilterFunction] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [loadBalancerWebClientBuilderBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2025-11-29 18:18:38.146 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8206 (http)
+2025-11-29 18:18:38.156 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2025-11-29 18:18:38.156 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.20]
+2025-11-29 18:18:38.323 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-11-29 18:18:38.323 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 2582 ms
+2025-11-29 18:18:40.492 [main] INFO  org.redisson.Version - Redisson 3.36.0
+2025-11-29 18:18:40.923 [redisson-netty-1-5] INFO  org.redisson.connection.ConnectionsHolder - 1 connections initialized for localhost/127.0.0.1:6379
+2025-11-29 18:18:40.928 [redisson-netty-1-8] INFO  org.redisson.connection.ConnectionsHolder - 2 connections initialized for localhost/127.0.0.1:6379
+2025-11-29 18:18:41.808 [main] INFO  c.alibaba.cloud.sentinel.SentinelWebMvcConfigurer - [Sentinel Starter] register SentinelWebInterceptor with urlPatterns: [/**].
+2025-11-29 18:18:43.565 [main] INFO  org.springframework.cloud.commons.util.InetUtils - Cannot determine local hostname
+2025-11-29 18:18:45.320 [main] INFO  org.springframework.cloud.commons.util.InetUtils - Cannot determine local hostname
+2025-11-29 18:18:47.429 [main] INFO  org.springframework.cloud.commons.util.InetUtils - Cannot determine local hostname
+2025-11-29 18:18:47.494 [main] WARN  o.s.c.l.c.LoadBalancerCacheAutoConfiguration$LoadBalancerCaffeineWarnLogger - Spring Cloud LoadBalancer is currently working with the default cache. While this cache implementation is useful for development and tests, it's recommended to use Caffeine cache in production.You can switch to using Caffeine cache, by adding it and org.springframework.cache.caffeine.CaffeineCacheManager to the classpath.
+2025-11-29 18:18:47.500 [main] INFO  o.s.b.actuate.endpoint.web.EndpointLinksResolver - Exposing 3 endpoint(s) beneath base path '/actuator'
+2025-11-29 18:18:47.608 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8206 (http) with context path ''
+2025-11-29 18:18:49.256 [main] INFO  org.springframework.cloud.commons.util.InetUtils - Cannot determine local hostname
+2025-11-29 18:18:49.264 [main] INFO  com.alibaba.nacos.client.naming - initializer namespace from ans.namespace attribute : null
+2025-11-29 18:18:49.266 [main] INFO  com.alibaba.nacos.client.naming - initializer namespace from ALIBABA_ALIWARE_NAMESPACE attribute :null
+2025-11-29 18:18:49.267 [main] INFO  com.alibaba.nacos.client.naming - initializer namespace from namespace attribute :null
+2025-11-29 18:18:49.270 [Thread-4] INFO  c.a.n.client.auth.ram.identify.CredentialWatcher - null No credential found
+2025-11-29 18:18:49.278 [main] INFO  com.alibaba.nacos.client.naming - FailoverDataSource type is class com.alibaba.nacos.client.naming.backups.datasource.DiskFailoverDataSource
+2025-11-29 18:18:49.296 [main] INFO  com.alibaba.nacos.client.utils.ParamUtil - [settings] [req-serv] nacos-server port:8848
+2025-11-29 18:18:49.296 [main] INFO  com.alibaba.nacos.client.utils.ParamUtil - [settings] [http-client] connect timeout:1000
+2025-11-29 18:18:49.297 [main] INFO  com.alibaba.nacos.client.utils.ParamUtil - PER_TASK_CONFIG_SIZE: 3000.0
+2025-11-29 18:18:49.307 [main] INFO  c.a.n.p.auth.spi.client.ClientAuthPluginManager - [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.impl.NacosClientAuthServiceImpl success.
+2025-11-29 18:18:49.307 [main] INFO  c.a.n.p.auth.spi.client.ClientAuthPluginManager - [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.ram.RamClientAuthServiceImpl success.
+2025-11-29 18:18:49.317 [main] INFO  com.alibaba.nacos.common.remote.client - [RpcClientFactory] create a new rpc client of b7e449db-b68d-417e-a149-04eccaef5a85
+2025-11-29 18:18:49.338 [main] INFO  com.alibaba.nacos.client.naming - Create naming rpc client for uuid->b7e449db-b68d-417e-a149-04eccaef5a85
+2025-11-29 18:18:49.339 [main] INFO  com.alibaba.nacos.common.remote.client - [b7e449db-b68d-417e-a149-04eccaef5a85] RpcClient init, ServerListFactory = com.alibaba.nacos.client.naming.core.ServerListManager
+2025-11-29 18:18:49.339 [main] INFO  com.alibaba.nacos.common.remote.client - [b7e449db-b68d-417e-a149-04eccaef5a85] Registry connection listener to current client:com.alibaba.nacos.client.naming.remote.gprc.redo.NamingGrpcRedoService
+2025-11-29 18:18:49.339 [main] INFO  com.alibaba.nacos.common.remote.client - [b7e449db-b68d-417e-a149-04eccaef5a85] Register server push request handler:com.alibaba.nacos.client.naming.remote.gprc.NamingPushRequestHandler
+2025-11-29 18:18:49.341 [main] INFO  com.alibaba.nacos.common.remote.client - [b7e449db-b68d-417e-a149-04eccaef5a85] Try to connect to server on start up, server: {serverIp = '127.0.0.1', server main port = 8848}
+2025-11-29 18:18:49.378 [main] INFO  c.a.nacos.common.remote.client.grpc.GrpcClient - grpc client connection server:127.0.0.1 ip,serverPort:9848,grpcTslConfig:{"sslProvider":"","enableTls":false,"mutualAuthEnable":false,"trustAll":false}
+2025-11-29 18:18:50.586 [main] INFO  c.a.n.common.ability.AbstractAbilityControlManager - Ready to get current node abilities...
+2025-11-29 18:18:50.588 [main] INFO  c.a.n.common.ability.AbstractAbilityControlManager - Ready to initialize current node abilities, support modes: [SDK_CLIENT]
+2025-11-29 18:18:50.590 [main] INFO  c.a.n.common.ability.AbstractAbilityControlManager - Initialize current abilities finish...
+2025-11-29 18:18:50.590 [main] INFO  c.a.n.c.ability.discover.NacosAbilityManagerHolder - [AbilityControlManager] Successfully initialize AbilityControlManager
+2025-11-29 18:18:50.611 [main] INFO  com.alibaba.nacos.common.remote.client - [b7e449db-b68d-417e-a149-04eccaef5a85] Success to connect to server [127.0.0.1:8848] on start up, connectionId = 1764411530485_127.0.0.1_52487
+2025-11-29 18:18:50.611 [com.alibaba.nacos.client.remote.worker.0] INFO  com.alibaba.nacos.common.remote.client - [b7e449db-b68d-417e-a149-04eccaef5a85] Notify connected event to listeners.
+2025-11-29 18:18:50.612 [com.alibaba.nacos.client.remote.worker.0] INFO  com.alibaba.nacos.client.naming - Grpc connection connect
+2025-11-29 18:18:50.612 [main] INFO  com.alibaba.nacos.common.remote.client - [b7e449db-b68d-417e-a149-04eccaef5a85] Register server push request handler:com.alibaba.nacos.common.remote.client.RpcClient$ConnectResetRequestHandler
+2025-11-29 18:18:50.612 [main] INFO  com.alibaba.nacos.common.remote.client - [b7e449db-b68d-417e-a149-04eccaef5a85] Register server push request handler:com.alibaba.nacos.common.remote.client.RpcClient$$Lambda$1663/0x0000017f01b877b0
+2025-11-29 18:18:50.613 [main] INFO  com.alibaba.nacos.client.naming - [REGISTER-SERVICE] public registering service Outpatient-backend-registration with instance Instance{instanceId='null', ip='192.168.186.1', port=8206, weight=1.0, healthy=true, enabled=true, ephemeral=true, clusterName='DEFAULT', serviceName='null', metadata={IPv6=[2001:da8:600b:e:b8d3:123:7551:8d7b], preserved.register.source=SPRING_CLOUD}}
+2025-11-29 18:18:50.626 [main] INFO  c.a.cloud.nacos.registry.NacosServiceRegistry - nacos registry, DEFAULT_GROUP Outpatient-backend-registration 192.168.186.1:8206 register finished
+2025-11-29 18:18:52.070 [main] INFO  org.springframework.cloud.commons.util.InetUtils - Cannot determine local hostname
+2025-11-29 18:18:52.071 [main] INFO  o.s.m.simp.broker.SimpleBrokerMessageHandler - Starting...
+2025-11-29 18:18:52.072 [main] INFO  o.s.m.simp.broker.SimpleBrokerMessageHandler - BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@34672fb]]
+2025-11-29 18:18:52.072 [main] INFO  o.s.m.simp.broker.SimpleBrokerMessageHandler - Started.
+2025-11-29 18:18:52.097 [main] INFO  com.std.cuit.registration.RegistrationApplication - Started RegistrationApplication in 18.939 seconds (process running for 20.09)
+2025-11-29 18:18:52.471 [RMI TCP Connection(4)-172.31.224.1] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-11-29 18:18:52.513 [RMI TCP Connection(1)-172.31.224.1] INFO  o.s.a.rabbit.connection.CachingConnectionFactory - Attempting to connect to: localhost:5672
+2025-11-29 18:18:52.549 [RMI TCP Connection(1)-172.31.224.1] INFO  o.s.a.rabbit.connection.CachingConnectionFactory - Created new connection: connectionFactory#63767d:0/SimpleConnection@57c392c9 [delegate=amqp://guest@127.0.0.1:5672/, localPort=52507]
+2025-11-29 18:18:52.569 [RMI TCP Connection(1)-172.31.224.1] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-11-29 18:18:52.776 [RMI TCP Connection(1)-172.31.224.1] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6bc017ce
+2025-11-29 18:18:52.780 [RMI TCP Connection(1)-172.31.224.1] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.

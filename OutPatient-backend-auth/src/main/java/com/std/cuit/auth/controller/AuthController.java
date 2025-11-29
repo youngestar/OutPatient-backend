@@ -1,6 +1,5 @@
 package com.std.cuit.auth.controller;
 
-import cn.dev33.satoken.stp.StpUtil;
 import com.std.cuit.model.VO.UserVO;
 import com.std.cuit.common.common.BaseResponse;
 import com.std.cuit.common.common.ResultUtils;
@@ -103,9 +102,9 @@ public class AuthController {
     @GetMapping("/currentUser")
     @Operation(summary = "获取当前登录用户信息", description = "获取当前登录用户信息")
     public BaseResponse<UserVO> getCurrentUserInfo(HttpServletRequest request) {
-        String authHeader = request.getHeader("Authorization");
-        log.info("接收到获取当前用户请求, Authorization头: {}", authHeader);
-        log.info("当前登录状态: {}, 用户ID: {}", StpUtil.isLogin(), StpUtil.isLogin() ? StpUtil.getLoginId() : "未登录");
+        String headerToken = request.getHeader("satoken");
+        log.info("currentUser header satoken: {}", headerToken);
+        log.info("currentUser StpUtil token: {}", cn.dev33.satoken.stp.StpUtil.getTokenValue());
         UserVO userVO = authService.getCurrentUserInfo();
         return ResultUtils.success(userVO);
     }
