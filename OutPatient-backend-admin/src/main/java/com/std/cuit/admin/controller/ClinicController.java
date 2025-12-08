@@ -3,6 +3,7 @@ package com.std.cuit.admin.controller;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import com.std.cuit.model.DTO.ClinicRequest;
 import com.std.cuit.common.common.BaseResponse;
+import com.std.cuit.model.VO.ClinicVO;
 import com.std.cuit.service.service.ClinicService;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
@@ -84,7 +85,7 @@ public class ClinicController {
      */
     @GetMapping("/detail-get")
     @Operation(summary = "获取门诊详情", description = "获取门诊详情")
-    public BaseResponse<ClinicRequest> getClinicDetail(@Parameter(description = "门诊ID") @RequestParam("clinicId") Long clinicId){
+    public BaseResponse<ClinicVO> getClinicDetail(@Parameter(description = "门诊ID") @RequestParam("clinicId") Long clinicId){
         return clinicService.getClinicDetail(clinicId);
     }
 }

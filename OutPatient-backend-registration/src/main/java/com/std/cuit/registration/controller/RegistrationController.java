@@ -78,12 +78,12 @@ public class RegistrationController {
      */
     @SaCheckRole(value = {"admin","patient"},mode = SaMode.OR)
     @GetMapping("/clinics")
-    public BaseResponse<List<Clinic>> getClinicList(
+    public BaseResponse<List<ClinicVO>> getClinicList(
             @RequestParam(required = false) Long deptId,
             @RequestParam(required = false, defaultValue = "true") boolean onlyActive) {
         log.info("接收到获取门诊列表请求, deptId: {}, onlyActive: {}", deptId, onlyActive);
         try {
-            List<Clinic> clinics = registrationService.getClinicList(deptId, onlyActive);
+            List<ClinicVO> clinics = registrationService.getClinicList(deptId, onlyActive);
             return ResultUtils.success(clinics);
         } catch (BusinessException e) {
             // 业务异常直接抛出（由全局异常处理器处理）

@@ -1,5 +1,6 @@
 package com.std.cuit.model.VO;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,11 +21,13 @@ public class AppointmentVO {
     /**
      * 预约ID
      */
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long appointmentId;
     
     /**
      * 患者ID
      */
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long patientId;
     
     /**
@@ -35,6 +38,7 @@ public class AppointmentVO {
     /**
      * 医生ID
      */
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long doctorId;
     
     /**
@@ -45,6 +49,7 @@ public class AppointmentVO {
     /**
      * 科室ID
      */
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long deptId;
     
     /**
@@ -55,6 +60,7 @@ public class AppointmentVO {
     /**
      * 门诊ID
      */
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long clinicId;
     
     /**
@@ -65,6 +71,7 @@ public class AppointmentVO {
     /**
      * 排班ID
      */
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long scheduleId;
     
     /**

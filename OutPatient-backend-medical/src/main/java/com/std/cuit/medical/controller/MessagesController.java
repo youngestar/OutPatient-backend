@@ -62,11 +62,6 @@ public class MessagesController {
         DiagnosisVO diagnosisVO = medicalService.getDiagnosisDetail(diagId);
 
         User user = medicalService.getCurrentUser();
-        //验证是否为管理员或者患者或者医生，否则拒绝访问
-        ThrowUtils.throwIf(!user.getRole().equals(2) && !medicalService.isCurrentPatient(diagnosisVO.getPatientId())
-                && !medicalService.isCurrentDoctor(diagnosisVO.getDoctorId())
-                , ErrorCode.NO_AUTH, "无权限访问");
-
         // 如果是患者或医生，标记所有消息为已读
         if (medicalService.isCurrentPatient(diagnosisVO.getPatientId()) || medicalService.isCurrentDoctor(diagnosisVO.getDoctorId())){
             Long entityId = user.getRole() == 0 ? diagnosisVO.getPatientId() : diagnosisVO.getDoctorId();

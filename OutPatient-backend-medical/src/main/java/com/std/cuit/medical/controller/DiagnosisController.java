@@ -41,9 +41,6 @@ public class DiagnosisController {
     public BaseResponse<List<DiagnosisVO>> getPatientDiagnosesList(@Parameter(description = "患者ID") @RequestParam("patientId") Long patientId) {
         //获取当前登录用户
         User user = medicalService.getCurrentUser();
-        //验证是否为管理员或者患者
-        ThrowUtils.throwIf(!user.getRole().equals(2) && !medicalService.isCurrentPatient(patientId)
-                , ErrorCode.NO_AUTH, "无权限访问");
 
         return ResultUtils.success(medicalService.getPatientDiagnosesList(patientId));
 
@@ -57,8 +54,6 @@ public class DiagnosisController {
         log.info("接收到获取医生诊断记录列表请求, doctorId: {}", doctorId);
 
         User user = medicalService.getCurrentUser();
-        ThrowUtils.throwIf(!user.getRole().equals(2) && !medicalService.isCurrentDoctor(doctorId)
-                , ErrorCode.NO_AUTH, "无权限访问");
         List<DiagnosisVO> diagnosisVOList = medicalService.getDoctorDiagnosesList(doctorId);
         return ResultUtils.success(diagnosisVOList);
     }

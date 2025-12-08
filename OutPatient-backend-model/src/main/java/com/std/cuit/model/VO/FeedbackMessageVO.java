@@ -1,5 +1,6 @@
 package com.std.cuit.model.VO;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -27,11 +28,13 @@ public class FeedbackMessageVO implements Serializable {
     /**
      * 消息ID
      */
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long messageId;
 
     /**
      * 诊断ID
      */
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long diagId;
 
     /**
@@ -42,6 +45,7 @@ public class FeedbackMessageVO implements Serializable {
     /**
      * 发送者ID
      */
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long senderId;
 
     /**

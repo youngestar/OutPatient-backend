@@ -14,7 +14,7 @@ import java.util.List;
 public interface RegistrationService {
     List<DepartmentVO> getDepartmentList(boolean onlyActive);
 
-    List<Clinic> getClinicList(Long deptId, boolean onlyActive);
+    List<ClinicVO> getClinicList(Long deptId, boolean onlyActive);
 
     List<Clinic> getClinicsByName(String name, boolean onlyActive);
 

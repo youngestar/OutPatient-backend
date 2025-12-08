@@ -10,17 +10,23 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DepartmentVO {
+public class ClinicVO {
     /**
-     * 科室ID
+     * 门诊ID
+     */
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private Long clinicId;
+
+    /**
+     * 所属科室ID
      */
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long deptId;
 
     /**
-     * 科室名称
+     * 门诊名称
      */
-    private String deptName;
+    private String clinicName;
 
     /**
      * 是否有效(0-无效,1-有效)

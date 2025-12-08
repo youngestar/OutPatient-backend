@@ -2,7 +2,7 @@ server:
   port: 8205
 spring:
   application:
-    name: Outpatient-backend-medical
+    name: outpatient-backend-medical
   profiles:
     active: dev
   mvc:
@@ -43,8 +43,8 @@ spring:
   mail:
     host: smtp.qq.com
     default-encoding: UTF-8
-    username: 1286958193@qq.com
-    password: xvdzhnhhwvurhfbf  # 确保这是QQ邮箱的授权码而不是登录密码
+    username: ${MAIL_USERNAME:235857689@qq.com}
+    password: ${MAIL_PASSWORD:cxrcsizayqlkbhdf}  # 通过环境变量设置
     port: 465
     protocol: smtps  # 改为smtps协议
     test-connection: false  # 禁用启动时测试连接
@@ -138,4 +138,4 @@ minio:
 
 ai-service:
   api-url: https://api.deepseek.com
-  api-key: sk-11c289f3111c47aaa1a8e7665729934a
+  api-key: ${AI_API_KEY:sk-7c36ac350dcf4f498f4141e83feb9bd2}

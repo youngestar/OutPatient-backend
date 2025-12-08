@@ -7,6 +7,7 @@ import com.std.cuit.model.DTO.ClinicRequest;
 import com.std.cuit.common.common.BaseResponse;
 import com.std.cuit.common.common.ErrorCode;
 import com.std.cuit.common.common.ResultUtils;
+import com.std.cuit.model.VO.ClinicVO;
 import com.std.cuit.model.entity.Clinic;
 import com.std.cuit.common.exception.ThrowUtils;
 import com.std.cuit.service.mapper.ClinicMapper;
@@ -196,7 +197,7 @@ public class ClinicServiceImpl extends ServiceImpl<ClinicMapper, Clinic> impleme
     }
 
     @Override
-    public BaseResponse<ClinicRequest> getClinicDetail(Long clinicId) {
+    public BaseResponse<ClinicVO> getClinicDetail(Long clinicId) {
         // 参数校验
         ThrowUtils.throwIf(clinicId == null
                 , ErrorCode.PARAMS_ERROR, "门诊ID不能为空");
@@ -207,11 +208,11 @@ public class ClinicServiceImpl extends ServiceImpl<ClinicMapper, Clinic> impleme
                 , ErrorCode.DATA_NOT_EXISTS, "门诊不存在");
 
         // 转换为DTO
-        ClinicRequest clinicRequest = new ClinicRequest();
-        BeanUtils.copyProperties(clinic, clinicRequest);
+        ClinicVO clinicVO = new ClinicVO();
+        BeanUtils.copyProperties(clinic, clinicVO);
 
         log.info("获取门诊详情成功，门诊ID：{}", clinicId);
-        return ResultUtils.success(clinicRequest);
+        return ResultUtils.success(clinicVO);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.std.cuit.model.VO;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,6 +32,7 @@ public class AiConsultResponse {
     /**
      * 会话ID
      */
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private String sessionId;
     
     /**

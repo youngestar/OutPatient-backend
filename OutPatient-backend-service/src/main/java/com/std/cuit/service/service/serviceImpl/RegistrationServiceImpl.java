@@ -53,11 +53,19 @@ public class RegistrationServiceImpl implements RegistrationService {
     }
 
     @Override
-    public List<Clinic> getClinicList(Long deptId, boolean onlyActive) {
+    public List<ClinicVO> getClinicList(Long deptId, boolean onlyActive) {
         ThrowUtils.throwIf(deptId == null
                 , ErrorCode.PARAMS_ERROR, "科室ID不能为空");
 
-        return clinicService.getClinicsByDeptId(deptId, onlyActive);
+        List<Clinic> clinicsByDeptId = clinicService.getClinicsByDeptId(deptId, onlyActive);
+        return clinicsByDeptId.stream()
+                .map(clinic -> ClinicVO.builder()
+                        .clinicId(clinic.getClinicId())
+                        .deptId(clinic.getDeptId())
+                        .clinicName(clinic.getClinicName())
+                        .isActive(clinic.getIsActive())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     @Override
