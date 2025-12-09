@@ -27,8 +27,6 @@ public class ClinicServiceImpl extends ServiceImpl<ClinicMapper, Clinic> impleme
     @Resource
     private ClinicMapper clinicMapper;
 
-    @Resource
-    private ClinicServiceImpl clinicServiceImpl;
 
     @Override
     public BaseResponse<Long> addClinic(ClinicRequest clinicRequest) {
@@ -46,7 +44,7 @@ public class ClinicServiceImpl extends ServiceImpl<ClinicMapper, Clinic> impleme
                 , ErrorCode.PARAMS_ERROR, "该科室下已存在同名门诊并且并没有被逻辑删除");
 
         if(existingClinic != null){
-            clinicServiceImpl.recoverClinic(clinicRequest);
+            recoverClinic(clinicRequest);
         }
 
         // 创建门诊实体

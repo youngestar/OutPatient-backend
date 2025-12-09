@@ -27,9 +27,6 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
     @Resource
     private DepartmentMapper departmentMapper;
 
-    @Resource
-    private DepartmentServiceImpl departmentServiceImpl;
-
     /**
      * 添加科室
      *
@@ -57,7 +54,7 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
             updateDepartmentRequest.setDeptId(deptId);
             updateDepartmentRequest.setDeptName(addDepartmentRequest.getDeptName());
             updateDepartmentRequest.setIsActive(addDepartmentRequest.getIsActive());
-            departmentServiceImpl.recoverDepartment(updateDepartmentRequest);
+            recoverDepartment(updateDepartmentRequest);
         }
         // 创建科室实体
         Department department = new Department();
