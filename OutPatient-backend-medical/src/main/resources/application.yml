@@ -131,7 +131,7 @@ medical:
 
 # MinIO 配置
 minio:
-  endpoint: http://localhost:9000  # MinIO 服务器地址
+  endpoint: http://localhost:9005  # MinIO 服务器地址
   access-key: minioadmin           # 访问密钥
   secret-key: minioadmin           # 秘密密钥
   bucket-name: user-avatar         # 存储桶名称

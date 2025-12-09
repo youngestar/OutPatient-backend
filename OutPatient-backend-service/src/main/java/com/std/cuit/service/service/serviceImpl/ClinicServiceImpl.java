@@ -27,6 +27,9 @@ public class ClinicServiceImpl extends ServiceImpl<ClinicMapper, Clinic> impleme
     @Resource
     private ClinicMapper clinicMapper;
 
+    @Resource
+    private ClinicServiceImpl clinicServiceImpl;
+
     @Override
     public BaseResponse<Long> addClinic(ClinicRequest clinicRequest) {
         // 参数校验
@@ -39,8 +42,12 @@ public class ClinicServiceImpl extends ServiceImpl<ClinicMapper, Clinic> impleme
 
         Clinic existingClinic = clinicMapper.selectOne(queryWrapper);
 
-        ThrowUtils.throwIf(existingClinic != null
-                , ErrorCode.PARAMS_ERROR, "该科室下已存在同名门诊");
+        ThrowUtils.throwIf(existingClinic != null && existingClinic.getIsActive() == 1
+                , ErrorCode.PARAMS_ERROR, "该科室下已存在同名门诊并且并没有被逻辑删除");
+
+        if(existingClinic != null){
+            clinicServiceImpl.recoverClinic(clinicRequest);
+        }
 
         // 创建门诊实体
         Clinic clinic = new Clinic();

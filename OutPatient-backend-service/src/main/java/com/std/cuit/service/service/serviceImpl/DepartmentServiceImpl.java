@@ -27,6 +27,9 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
     @Resource
     private DepartmentMapper departmentMapper;
 
+    @Resource
+    private DepartmentServiceImpl departmentServiceImpl;
+
     /**
      * 添加科室
      *
@@ -45,9 +48,17 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
         LambdaQueryWrapper<Department> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Department::getDeptName, addDepartmentRequest.getDeptName().trim());
         Department existingDept = departmentMapper.selectOne(queryWrapper);
-        ThrowUtils.throwIf(existingDept != null
-                , ErrorCode.PARAMS_ERROR, "科室名称已存在");
-
+        ThrowUtils.throwIf(existingDept != null && existingDept.getIsActive() == 1
+                , ErrorCode.PARAMS_ERROR, "科室名称已存在并且并未被逻辑删除");
+        //恢复科室
+        if (existingDept != null) {
+            Long deptId = existingDept.getDeptId();
+            UpdateDepartmentRequest updateDepartmentRequest = new UpdateDepartmentRequest();
+            updateDepartmentRequest.setDeptId(deptId);
+            updateDepartmentRequest.setDeptName(addDepartmentRequest.getDeptName());
+            updateDepartmentRequest.setIsActive(addDepartmentRequest.getIsActive());
+            departmentServiceImpl.recoverDepartment(updateDepartmentRequest);
+        }
         // 创建科室实体
         Department department = new Department();
         BeanUtils.copyProperties(addDepartmentRequest, department);

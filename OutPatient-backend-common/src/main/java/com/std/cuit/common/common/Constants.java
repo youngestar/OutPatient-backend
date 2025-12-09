@@ -17,7 +17,7 @@ public class Constants {
         /**
          * 用户头像存储桶名称
          */
-        public static final String USER_AVATAR_BUCKET = "his-user-avatars";
+        public static final String USER_AVATAR_BUCKET = "user-avatars";
 
         /**
          * 默认用户头像URL

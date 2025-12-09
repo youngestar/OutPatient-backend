@@ -2,8 +2,10 @@ package com.std.cuit.service.utils.minio;
 
 import io.minio.*;
 import io.minio.http.Method;
+import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,6 +21,15 @@ public class MinioUtils {
     @Resource
     private MinioClient minioClient;
 
+    @Value("${minio.bucket-name:user-avatar}")
+    private String defaultBucketName;
+
+
+    @PostConstruct
+    public void init() {
+        log.info("MinIO 配置加载完成 - 默认桶名: {}", defaultBucketName);
+        log.info("MinIO endpoint 配置: {}", System.getProperty("minio.endpoint"));
+    }
     /**
      * 检查桶是否存在
      * @param bucketName 桶名称
@@ -37,7 +48,7 @@ public class MinioUtils {
      */
     public void createBucket(String bucketName) throws Exception {
         // 检查桶是否存在，不存在则创建
-        if (isBucketExists(bucketName)) {
+        if (!isBucketExists(bucketName)) {
             // 创建bucket
             minioClient.makeBucket(MakeBucketArgs
                     .builder()
@@ -52,11 +63,20 @@ public class MinioUtils {
                     .bucket(bucketName)
                     .config(policyJsonString)
                     .build());
-            
+
             log.info("桶 {} 创建成功并设置为公开只读", bucketName);
         } else {
             log.info("桶 {} 已存在", bucketName);
         }
+    }
+
+    /**
+     * 上传用户头像（使用默认桶）
+     * @param file 用户上传的头像文件
+     * @return 文件的访问URL
+     */
+    public String uploadAvatar(MultipartFile file) throws Exception {
+        return uploadAvatar(defaultBucketName, file);
     }
 
     /**
@@ -66,17 +86,15 @@ public class MinioUtils {
      * @return 文件的访问URL
      */
     public String uploadAvatar(String bucketName, MultipartFile file) throws Exception {
-        // 检查桶是否存在，不存在则创建
-        if (isBucketExists(bucketName)) {
-            createBucket(bucketName);
-        }
-        
+        // 确保桶存在
+        createBucket(bucketName);
+
         // 生成唯一的文件名（使用UUID）
         String originalFilename = file.getOriginalFilename();
         assert originalFilename != null;
         String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
         String objectName = "avatar/" + UUID.randomUUID() + extension;
-        
+
         // 上传文件到MinIO
         minioClient.putObject(PutObjectArgs.builder()
                 .bucket(bucketName)
@@ -84,11 +102,23 @@ public class MinioUtils {
                 .stream(file.getInputStream(), file.getSize(), -1)
                 .contentType(file.getContentType())
                 .build());
-        
+
+        log.info("文件上传成功: {}/{}", bucketName, objectName);
+
         // 返回文件的URL
         return getFileUrl(bucketName, objectName, 7, TimeUnit.DAYS);
     }
-    
+
+    /**
+     * 更新用户头像（使用默认桶）
+     * @param file 新的头像文件
+     * @param oldObjectUrl 旧头像的URL（可能为空）
+     * @return 新头像的URL
+     */
+    public String updateAvatar(MultipartFile file, String oldObjectUrl) throws Exception {
+        return updateAvatar(defaultBucketName, file, oldObjectUrl);
+    }
+
     /**
      * 更新用户头像
      * @param bucketName 桶名称
@@ -109,7 +139,7 @@ public class MinioUtils {
                 }
             }
         }
-        
+
         // 上传新头像
         return uploadAvatar(bucketName, file);
     }
