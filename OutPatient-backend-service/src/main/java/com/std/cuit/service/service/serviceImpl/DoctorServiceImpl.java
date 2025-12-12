@@ -364,6 +364,11 @@ public class DoctorServiceImpl extends ServiceImpl<DoctorMapper, Doctor> impleme
         ThrowUtils.throwIf(doctor == null
                 , ErrorCode.DOCTOR_NOT_EXIST, "医生不存在");
 
+        User user = userService.getById(doctor.getUserId());
+
+        ThrowUtils.throwIf(user == null
+                , ErrorCode.USER_NOT_EXIST, "用户不存在");
+
         return ResultUtils.success(DoctorVO.builder()
                 .doctorId(doctor.getDoctorId())
                 .userId(doctor.getUserId())
@@ -372,6 +377,7 @@ public class DoctorServiceImpl extends ServiceImpl<DoctorMapper, Doctor> impleme
                 .deptName(departmentService.getById(clinicService.getById(doctor.getClinicId()).getDeptId()).getDeptName())
                 .title(doctor.getTitle())
                 .introduction(doctor.getIntroduction())
+                .avatar(user.getAvatar())
                 .build());
 
     }

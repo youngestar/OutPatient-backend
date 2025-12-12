@@ -2,6 +2,7 @@ package com.std.cuit.registration.controller;
 
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.annotation.SaMode;
+import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.stp.StpUtil;
 import com.std.cuit.common.common.BaseResponse;
 import com.std.cuit.common.common.ErrorCode;
@@ -222,16 +223,34 @@ public class AppointmentController {
     @SaCheckRole(value = {"doctor", "patient", "admin"}, mode = SaMode.OR)
     @GetMapping("/message/history")
     @Operation(summary = "获取预约相关的AI问诊消息记录", description = "获取预约相关的AI问诊消息记录")
-    public BaseResponse<List<MessageRecord>> getAppointmentMessageHistory(@RequestParam(value = "appointmentId") Long appointmentId){
-        log.info("接收到获取预约消息记录请求, appointmentId: {}", appointmentId);
-        try {
-            // 获取当前登录用户ID
-            Long userId = StpUtil.getLoginIdAsLong();
+    public BaseResponse<List<MessageRecord>> getAppointmentMessageHistory(
+            @RequestParam(value = "appointmentId") Long appointmentId) {
 
+        log.info("接收到获取预约消息记录请求, appointmentId: {}", appointmentId);
+
+        try {
+            // 1. 检查是否已登录
+            if (!StpUtil.isLogin()) {
+                log.warn("用户未登录或登录状态已过期");
+                return ResultUtils.error(ErrorCode.NOT_LOGIN, "请先登录");
+            }
+
+            // 2. 获取当前登录用户ID
+            Long userId;
+            try {
+                userId = StpUtil.getLoginIdAsLong();
+            } catch (NotLoginException e) {
+                log.warn("获取用户ID失败: {}", e.getMessage());
+                return ResultUtils.error(ErrorCode.NOT_LOGIN, "登录状态异常，请重新登录");
+            }
+
+            log.info("当前登录用户ID: {}", userId);
+
+            // 3. 获取消息记录
             List<MessageRecord> messageHistory = appointmentService.getAppointmentMessageHistory(appointmentId, userId);
             return ResultUtils.success(messageHistory);
+
         } catch (BusinessException e) {
-            // 业务异常直接抛出（由全局异常处理器处理）
             log.error("获取预约消息记录业务异常: {}", e.getMessage());
             return ResultUtils.businessError(e.getMessage());
         } catch (Exception e) {

@@ -68,6 +68,13 @@ public class SaTokenReactorConfig {
                             .notMatch(EXCLUDE_PATHS)
                             .check(r -> {
                                 StpUtil.checkLogin();
+                                // 在认证通过后立即刷新 token 的最后活跃时间，避免长时间无操作导致过期
+                                try {
+                                    StpUtil.updateLastActiveToNow();
+                                    log.debug("网关刷新 token 活跃时间: {}", StpUtil.getLoginId());
+                                } catch (Exception e) {
+                                    log.warn("网关刷新 token 活跃时间失败: {}", e.getMessage());
+                                }
                                 log.debug("用户认证通过: {}", StpUtil.getLoginId());
                             });
 

@@ -706,7 +706,7 @@ public class AIServiceImpl extends ServiceImpl<AiConsultRecordMapper, AiConsultR
             throw new RuntimeException("保存对话记录失败", e);
         }
     }
-    
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean endConsultSession(String sessionId) {
@@ -717,29 +717,34 @@ public class AIServiceImpl extends ServiceImpl<AiConsultRecordMapper, AiConsultR
                 log.warn("结束会话失败: 会话不存在, sessionId: {}", sessionId);
                 return false;
             }
-            
+
+            // 检查会话是否已经结束
+            if (session.getStatus() == 1) {
+                log.info("会话已结束, 无需重复结束, sessionId: {}", sessionId);
+                return true;
+            }
+
             // 更新会话状态
             session.setStatus(1); // 已结束
-            
-            // 保存到Redis
-            saveSessionToRedis(session);
-            
+
             // 保存到数据库（带事务）
             boolean saved = saveConsultRecord(sessionId);
-            
+
             if (saved) {
-                // 关闭SSE连接
-                SseEmitter emitter = sseEmitterMap.remove(sessionId);
-                if (emitter != null) {
-                    emitter.complete();
-                }
+                // 保存到Redis（保持会话数据，但标记为已结束）
+                saveSessionToRedis(session);
+
+                // 注意：不要从sseEmitterMap中移除SSE连接
+                // 因为用户可能还需要查看历史会话
+
+                log.info("成功结束AI问诊会话, sessionId: {}", sessionId);
             } else {
                 // 如果保存失败，回滚Redis中的状态
                 session.setStatus(0);
                 saveSessionToRedis(session);
                 throw new RuntimeException("保存会话记录失败");
             }
-            
+
             return true;
         } catch (Exception e) {
             log.error("结束对话会话异常: {}", e.getMessage());

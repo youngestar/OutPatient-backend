@@ -48,4 +48,9 @@ public class DoctorVO {
      * 医生简介
      */
     private String introduction;
+
+    /**
+     * 医生头像
+     */
+    private String avatar;
 }

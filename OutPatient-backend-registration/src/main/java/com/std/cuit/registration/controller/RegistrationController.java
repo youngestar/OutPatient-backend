@@ -386,4 +386,43 @@ public class RegistrationController {
         }
     }
 
+    /**
+     * 恢复AI问诊会话
+     * 用于用户重新进入已存在的会话
+     */
+    @SaCheckRole("patient")
+    @PostMapping("/ai-consult/resume")
+    public BaseResponse<String> resumeAiConsultSession(@RequestBody ResumeAiConsultRequest request) {
+        log.info("接收到恢复AI问诊会话请求, sessionId: {}, appointmentId: {}",
+                request.getSessionId(), request.getAppointmentId());
+
+        try {
+            // 验证会话是否存在且属于当前用户
+            ConsultSession session = registrationService.getAiConsultHistory(request.getSessionId());
+
+            if (session == null) {
+                return ResultUtils.error(ErrorCode.NOT_FOUND_ERROR, "会话不存在");
+            }
+
+            // 验证会话状态（0=进行中，1=已结束）
+            if (session.getStatus() == 1) {
+                return ResultUtils.error(ErrorCode.OPERATION_ERROR, "会话已结束，无法恢复");
+            }
+
+            // 验证会话关联的预约ID
+            if (!request.getAppointmentId().equals(session.getAppointmentId())) {
+                return ResultUtils.error(ErrorCode.PARAMS_ERROR, "会话与预约不匹配");
+            }
+
+            return ResultUtils.success(request.getSessionId());
+
+        } catch (BusinessException e) {
+            log.error("恢复AI问诊会话业务异常: {}", e.getMessage());
+            return ResultUtils.businessError(e.getMessage());
+        } catch (Exception e) {
+            log.error("恢复AI问诊会话异常", e);
+            return ResultUtils.error(ErrorCode.SYSTEM_ERROR, "恢复会话异常");
+        }
+    }
+
 }
