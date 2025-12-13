@@ -290,7 +290,13 @@ public class AuthServiceImpl implements AuthService {
         userVO.setUsername(user.getUsername());
         userVO.setEmail(user.getEmail());
         userVO.setPhone(user.getPhone());
-        userVO.setAvatar(user.getAvatar());
+        // 确保 avatar 不为空，若为空使用默认头像，并记录日志，便于排查
+        String avatarUrl = user.getAvatar();
+        if (StringUtils.isBlank(avatarUrl)) {
+            avatarUrl = Constants.MinioConstants.DEFAULT_AVATAR_URL;
+        }
+        userVO.setAvatar(avatarUrl);
+        log.info("buildUserVO avatar for userId {} -> {}", user.getId(), avatarUrl);
         userVO.setRole(user.getRole());
         userVO.setCreateTime(user.getCreateTime());
         userVO.setUpdateTime(user.getUpdateTime());

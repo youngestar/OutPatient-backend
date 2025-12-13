@@ -356,7 +356,7 @@ public class DoctorServiceImpl extends ServiceImpl<DoctorMapper, Doctor> impleme
      */
     @Override
     public BaseResponse<DoctorVO> getDoctorDetail(Long doctorId) {
-        log.info("查询医生信息详情");
+        log.info("查询医生信息详情, doctorId={}", doctorId);
         ThrowUtils.throwIf(doctorId == null
                 , ErrorCode.PARAMS_ERROR, "医生ID不能为空");
 
@@ -369,6 +369,13 @@ public class DoctorServiceImpl extends ServiceImpl<DoctorMapper, Doctor> impleme
         ThrowUtils.throwIf(user == null
                 , ErrorCode.USER_NOT_EXIST, "用户不存在");
 
+        // 记录并处理 avatar，避免返回给前端空值
+        String avatarUrl = user.getAvatar();
+        if (StringUtils.isBlank(avatarUrl)) {
+            avatarUrl = Constants.MinioConstants.DEFAULT_AVATAR_URL;
+        }
+        log.info("Doctor detail avatar for doctorId {} -> {}", doctorId, avatarUrl);
+
         return ResultUtils.success(DoctorVO.builder()
                 .doctorId(doctor.getDoctorId())
                 .userId(doctor.getUserId())
@@ -377,7 +384,7 @@ public class DoctorServiceImpl extends ServiceImpl<DoctorMapper, Doctor> impleme
                 .deptName(departmentService.getById(clinicService.getById(doctor.getClinicId()).getDeptId()).getDeptName())
                 .title(doctor.getTitle())
                 .introduction(doctor.getIntroduction())
-                .avatar(user.getAvatar())
+                .avatar(avatarUrl)
                 .build());
 
     }
