@@ -491,3 +491,6 @@ org.springframework.http.converter.HttpMessageNotWritableException: No converter
 2025-12-13 16:38:51.354 [RMI TCP Connection(1)-192.168.186.1] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
 2025-12-13 16:38:51.591 [RMI TCP Connection(1)-192.168.186.1] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@36c49154
 2025-12-13 16:38:51.597 [RMI TCP Connection(1)-192.168.186.1] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-12-13 16:46:39.985 [http-nio-8206-exec-2] INFO  c.s.c.r.controller.AppointmentController - 接收到获取医生预约记录请求, doctorId: 1995376733398355969, date: null, status: null
+2025-12-13 16:46:39.989 [http-nio-8206-exec-2] INFO  c.s.c.s.service.serviceImpl.AppointmentServiceImpl - 获取医生预约记录, doctorId: 1995376733398355969, date: null, status: null
+2025-12-13 16:55:38.591 [http-nio-8206-exec-3] INFO  c.s.c.r.controller.RegistrationController - 接收到获取科室列表请求, onlyActive: true

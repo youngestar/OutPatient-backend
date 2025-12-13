@@ -538,12 +538,14 @@ public class RegistrationServiceImpl implements RegistrationService {
         return doctors.stream()
                 .map(doctor -> {
                     DoctorVO doctorVO = new DoctorVO();
+                    User user = userService.getById(doctor.getUserId());
                     doctorVO.setDoctorId(doctor.getDoctorId());
                     doctorVO.setUserId(doctor.getUserId());
                     doctorVO.setName(doctor.getName());
                     doctorVO.setClinicId(doctor.getClinicId());
                     doctorVO.setTitle(doctor.getTitle());
                     doctorVO.setIntroduction(doctor.getIntroduction());
+                    doctorVO.setAvatar(user.getAvatar());
 
                     // 设置科室名称
                     Clinic clinic = clinicMap.get(doctor.getClinicId());
