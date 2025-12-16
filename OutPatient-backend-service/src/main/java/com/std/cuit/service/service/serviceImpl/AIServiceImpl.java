@@ -253,7 +253,7 @@ public class AIServiceImpl extends ServiceImpl<AiConsultRecordMapper, AiConsultR
             // 添加系统消息
             MessageRecord systemMessage = MessageRecord.builder()
                     .role("system")
-                    .content(createSystemPrompt())
+                    .content(createSystemPromptForSession(session))
                     .createTime(LocalDateTime.now())
                     .build();
             session.getMessageHistory().add(systemMessage);
@@ -329,7 +329,7 @@ public class AIServiceImpl extends ServiceImpl<AiConsultRecordMapper, AiConsultR
             // 添加系统消息
             MessageRecord systemMessage = MessageRecord.builder()
                     .role("system")
-                    .content(createSystemPrompt())
+                    .content(createSystemPromptForSession(session))
                     .createTime(LocalDateTime.now())
                     .build();
             session.getMessageHistory().add(systemMessage);
@@ -399,24 +399,76 @@ public class AIServiceImpl extends ServiceImpl<AiConsultRecordMapper, AiConsultR
         return sessionId;
     }
     
+
     /**
-     * 构建系统提示词
+     * 根据会话内容动态选择系统提示词（针对心理/抑郁关键词切换到更温和且包含危机处理的提示）
+     *
+     * 说明/假设：
+     * - 如果会话历史中出现“抑郁/沮丧/自杀/想死/无助/绝望”等关键词，认为这是需要更高同理心与危机优先的场景，切换为抑郁专用提示。
+     * - 这是一个保守的启发式检测；若你有更可靠的患者标签（例如session中包含isMentalHealth或diagnosisTags），可以改为直接读取该标签以做更精确的路由。
      */
-    private String createSystemPrompt() {
+    private String createSystemPromptForSession(ConsultSession session) {
+        if (session != null && session.getMessageHistory() != null) {
+            try {
+                for (MessageRecord mr : session.getMessageHistory()) {
+                    String content = mr.getContent();
+                    if (content != null) {
+                        String lower = content.toLowerCase();
+                        if (lower.contains("抑郁") || lower.contains("沮丧") || lower.contains("想死")
+                                || lower.contains("自杀") || lower.contains("无助") || lower.contains("绝望")) {
+                            return createDepressionPrompt();
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                log.warn("检测心理关键词时出错，使用默认提示词: {}", e.getMessage());
+            }
+        }
+        return createWarmPrompt();
+    }
+
+    private String createWarmPrompt() {
         return """
                 角色设定：
                 - 您是一位拥有执业资格的 AI 全科医生
                 - 必须遵循《人工智能医疗助手伦理准则》
                 
+                交流风格：
+                - 使用温和、同理、非评判性的语言；优先倾听并验证患者感受
+                - 避免过度医学术语；必要时给出简短易懂的解释
+                - 当识别到危机信号时（例如自伤、自杀想法），请按规定进入危机应对流程
+                
                 行为规范：
                 1. 问诊流程：症状确认 → 初步建议 → 就医指引
-                2. 必须包含风险提示语句
-                3. 禁用药物剂量建议
+                2. 必须包含风险提示语句并尊重患者的情绪
+                3. 禁用具体药物剂量与处方建议；所有用药建议需提示“请咨询主治医生或药师”
                 
                 输出格式：
+                请在回复开始时用一句温和的确认句落地开场（例如“我能理解你现在很难受”），但不要输出“【安慰开场】”标题。
                 【症状分析】...
-                【初步判断】...
-                【就医建议】...
+                【初步判断】（说明不确定性）
+                【建议与下一步】（就医/随访/紧急处理）
+                【风险提示】（如有立即危险，提示联系当地急救或危机热线）
+                """;
+
+    }
+
+    private String createDepressionPrompt() {
+        return """
+                角色设定：
+                - 您是一名具备心理卫生知识的 AI（非替代心理治疗师），在与可能有抑郁或自杀风险的患者交流时使用高度同理、温柔且直接的语言。
+                
+                首要原则（必须遵守）：
+                1) 优先确保患者安全：若检测到自伤/自杀意念或计划，立即引导至危机应对（询问当前是否有自伤计划/手段、是否在近期有实施想法），并建议立刻联系当地急救或危机热线。
+                2) 不进行诊断结论或给出处方剂量；任何确诊或处方须由有执照的医疗专业人员完成。
+                3) 语句要短、清晰、有同理心，避免刺激性或评判性问句。
+                
+                交流与输出格式建议：
+                【同理开场】（例如：“我能感觉到你现在很难受，这一定很不容易。”）
+                【简短核查】（睡眠/食欲/兴趣/能量/自责感/有无自伤想法）
+                【风险响应】（如有自伤/自杀想法，给出具体行动指引并建议立即联系急救或近期的可信赖的人）
+                【支持性建议】（短期应对策略：安全环境、联系信任的人、放慢呼吸等；并建议尽快联系主治医生或心理医生）
+                【注意事项】（再次强调不提供处方、并建议面对面评估）
                 """;
     }
     
@@ -433,11 +485,18 @@ public class AIServiceImpl extends ServiceImpl<AiConsultRecordMapper, AiConsultR
                     .build();
             messages.add(message);
         }
-        
+
+        // 在最前面插入一条明确的格式要求，强制模型在回答中包含指定小标题
+        Message formatInstruction = Message.builder()
+                .role("system")
+                .content(createResponseFormatInstruction())
+                .build();
+        messages.add(0, formatInstruction);
+
         // 创建响应格式
         ResponseFormat responseFormat = new ResponseFormat();
         responseFormat.setType("text");
-        
+
         // 创建AIRequest
         return AIRequest.builder()
                 .messages(messages)
@@ -452,7 +511,22 @@ public class AIServiceImpl extends ServiceImpl<AiConsultRecordMapper, AiConsultR
                 .responseFormat(responseFormat)
                 .build();
     }
-    
+
+    /**
+     * 格式化输出强制说明：确保模型输出包含下列标题（每个标题单独成行，且使用方括号）
+     */
+    private String createResponseFormatInstruction() {
+        return """
+                请在最终回复中严格包含以下小标题（每个小标题单独成行，使用中文方括号）：
+                【症状分析】
+                【初步判断】
+                【建议与下一步】
+                【风险提示】
+                在回复开始时请用一句温和的确认句（例如：“我能理解你现在很难受。”）作为自然开场，但不要输出任何形式的“【安慰开场】”标题。
+                在每个标题下提供相应内容。不要省略这些标题，也不要改变标题的文字或括号形式。如需添加额外说明，请放在这些标题之后的单独段落。
+                """;
+    }
+
     /**
      * 处理AI响应
      */
