@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 /**
@@ -38,9 +39,11 @@ public class MailService {
     private static final long CODE_EXPIRE_MINUTES = 5 * 60 * 1000; // 5分钟，转换为毫秒
 
     /**
-     * 发送验证码到指定邮箱
+     * 发送验证码到指定邮箱（异步）
+     * 使用专用线程池 mailTaskExecutor，避免阻塞调用线程
      * @param to 接收者邮箱
      */
+    @Async("mailTaskExecutor")
     public void sendVerificationCode(String to) {
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
@@ -58,11 +61,11 @@ public class MailService {
 
             helper.setText("您的验证码是：" + code + "，5分钟内有效", false);
             javaMailSender.send(message);
-            
+
             log.info("验证码已发送至邮箱：{}", to);
         } catch (Exception e) {
-            log.error("发送邮件失败", e);
-            throw new RuntimeException("发送邮件失败");
+            // 异步方法中应记录错误但不抛出（避免影响调用者）；可考虑加入重试或失败入队逻辑
+            log.error("发送邮件失败（异步） to={} ", to, e);
         }
     }
 }
