@@ -191,6 +191,9 @@ public class AuthServiceImpl implements AuthService {
         ThrowUtils.throwIf(!user.getPassword().equals(encryptedPassword)
                 , ErrorCode.PARAMS_ERROR, "密码错误");
 
+        // 刷新头像URL有效期
+        refreshAvatar(user);
+
         // 更新最后登录时间
         user.setUpdateTime(LocalDateTime.now());
         userService.updateById(user);
@@ -236,12 +239,41 @@ public class AuthServiceImpl implements AuthService {
         ThrowUtils.throwIf(user == null
                 , ErrorCode.DATA_NOT_EXISTS, "用户不存在");
 
+        // 刷新头像URL有效期
+        refreshAvatar(user);
+        userService.updateById(user);
+
         Patient patient = null;
         if (user.getRole() == 0) {
             patient = patientService.getByUserId(userId);
         }
 
         return buildUserVO(user, patient);
+    }
+
+    /**
+     * 刷新用户头像URL有效期
+     * @param user 用户对象
+     */
+    private void refreshAvatar(User user) {
+        String avatarUrl = user.getAvatar();
+        // 如果为空或者是默认头像，则不刷新
+        if (StringUtils.isBlank(avatarUrl) || Constants.MinioConstants.DEFAULT_AVATAR_URL.equals(avatarUrl)) {
+            return;
+        }
+
+        try {
+            // 从URL中提取对象名称
+            String objectName = minioUtils.extractObjectNameFromUrl(avatarUrl);
+            if (StringUtils.isNotBlank(objectName)) {
+                // 生成新的预签名URL
+                String newAvatarUrl = minioUtils.getFileUrl(Constants.MinioConstants.USER_AVATAR_BUCKET, objectName);
+                user.setAvatar(newAvatarUrl);
+                log.info("用户[{}]头像URL已刷新", user.getUsername());
+            }
+        } catch (Exception e) {
+            log.warn("刷新用户头像URL失败: {}", e.getMessage());
+        }
     }
 
     /**
@@ -507,3 +539,4 @@ public class AuthServiceImpl implements AuthService {
         doctorService.updateById(doctor);
     }
 }
+
