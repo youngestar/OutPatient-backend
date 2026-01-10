@@ -302,13 +302,15 @@ public class DoctorServiceImpl extends ServiceImpl<DoctorMapper, Doctor> impleme
         ThrowUtils.throwIf(doctor == null
                 , ErrorCode.DOCTOR_NOT_EXIST, "医生不存在");
 
-        //检查是否有关联的排班
+        //检查是否有关联的排班（只统计今天及以后的有效排班，已过期的排班不阻止删除）
         LambdaQueryWrapper<Schedule> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Schedule::getDoctorId, doctorId);
+        queryWrapper.eq(Schedule::getDoctorId, doctorId)
+                .ge(Schedule::getScheduleDate, LocalDate.now())
+                .eq(Schedule::getStatus, 1); // 1表示有效
         long count = scheduleService.count(queryWrapper);
 
         ThrowUtils.throwIf(count > 0
-                , ErrorCode.OPERATION_ERROR, "该医生有关联的排班，请先删除关联的排班");
+                , ErrorCode.OPERATION_ERROR, "该医生有关联的排班（未来或今天），请先删除关联的排班");
 
         //获取关联的用户Id
         Long userId = doctor.getUserId();

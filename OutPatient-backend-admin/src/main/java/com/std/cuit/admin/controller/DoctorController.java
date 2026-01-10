@@ -79,5 +79,4 @@ public class DoctorController {
     public BaseResponse<DoctorVO> getDoctorDetail(@Parameter (description = "医生ID") @RequestParam("doctorId") Long doctorId) {
         return doctorService.getDoctorDetail(doctorId);
     }
-
 }
